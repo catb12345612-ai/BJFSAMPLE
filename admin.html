@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Admin - Live Stock Control</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background: #0f0f13; color: #fff; margin: 0; }
+    h2 { color: #e8b84b; text-align: center; margin-top: 10px; }
+    .item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #1a1a24; margin-bottom: 12px; border-radius: 15px; box-shadow: 6px 6px 12px #070709, -6px -6px 12px #262632; border: 1px solid rgba(255, 215, 0, 0.05);}
+    button { padding: 12px 16px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); font-size: 13px; }
+    button:active { transform: scale(0.92); }
+  </style>
+</head>
+<body>
+  <h2>Dessert Inventory Manager</h2>
+  <p style="text-align: center; color: #8f7a63; font-size: 13px; margin-bottom: 25px;">Items marked 'OUT OF STOCK' will automatically be hidden from the customer spin wheel.</p>
+  
+  <div id="inventory">
+    <p style="text-align: center; color: #fff;">Connecting to Database...</p>
+  </div>
+
+  <script>
+    // INTEGRATED FIREBASE URL
+    const FIREBASE_URL = "https://gani-cafe-default-rtdb.asia-southeast1.firebasedatabase.app/products";
+
+    async function loadStock() {
+      try {
+        const res = await fetch(`${FIREBASE_URL}.json`);
+        const data = await res.json();
+        
+        let html = "";
+        for(let key in data) {
+          let isStock = data[key].inStock;
+          html += `<div class="item">
+                    <span style="font-size: 15px; font-weight: 600; width: 60%;">${data[key].name}</span>
+                    <button style="background:${isStock ? 'linear-gradient(135deg, #40d06a, #1faa4f)' : 'linear-gradient(135deg, #e04b3a, #b71c1c)'}; color:white;" 
+                            onclick="toggleStock('${key}', ${isStock})">
+                      ${isStock ? 'IN STOCK' : 'OUT OF STOCK'}
+                    </button>
+                   </div>`;
+        }
+        document.getElementById('inventory').innerHTML = html;
+      } catch(e) {
+        document.getElementById('inventory').innerHTML = "<p style='color:red; text-align:center;'>Database Connection Failed.</p>";
+      }
+    }
+
+    async function toggleStock(key, currentStatus) {
+      await fetch(`${FIREBASE_URL}/${key}.json`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inStock: !currentStatus })
+      });
+      loadStock(); // Instantly refresh the UI
+    }
+    
+    loadStock();
+  </script>
+</body>
+</html>
