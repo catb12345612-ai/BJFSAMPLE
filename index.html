@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BJF Surprise Treat</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: #0f0f13; color: #fff; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; }
+    
+    .screen { display: none; width: 90%; max-width: 400px; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .active { display: block; }
+    
+    .card-3d { background: linear-gradient(145deg, #1a1a24, #16161d); padding: 30px 20px; border-radius: 25px; box-shadow: 12px 12px 24px #060608, -12px -12px 24px #262632; border: 1px solid rgba(255, 215, 0, 0.1); perspective: 1000px; }
+    
+    .restaurant-logo { width: 100px; height: 100px; border-radius: 50%; box-shadow: 0px 10px 20px rgba(0,0,0,0.5); margin-bottom: 15px; border: 2px solid #e8b84b; object-fit: cover; }
+    .product-img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin: 15px 0; box-shadow: inset 0px 0px 15px rgba(0,0,0,0.5), 0px 10px 20px rgba(0,0,0,0.4); border: 2px solid #3fbf6a; }
+    
+    input, select, textarea { width: 100%; margin: 15px 0; padding: 16px; border-radius: 15px; border: none; background: #121217; color: #fff; font-size: 16px; box-shadow: inset 5px 5px 10px #070709, inset -5px -5px 10px #1d1d25; outline: none; transition: 0.3s; }
+    input:focus, select:focus, textarea:focus { box-shadow: inset 5px 5px 10px #070709, inset -5px -5px 10px #1d1d25, 0 0 10px rgba(232,184,75,0.5); }
+    
+    button { width: 100%; padding: 16px; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; transition: all 0.2s; box-shadow: 6px 6px 12px #070709, -6px -6px 12px #21212b; }
+    button:active { box-shadow: inset 4px 4px 8px rgba(0,0,0,0.4), inset -4px -4px 8px rgba(255,255,255,0.1); transform: translateY(2px); }
+    
+    .btn-gold { background: linear-gradient(135deg, #f6d78a, #e8b84b); color: #140b07; }
+    .btn-green { background: linear-gradient(135deg, #40d06a, #1faa4f); color: #fff; }
+    .btn-google { background: linear-gradient(135deg, #4285F4, #0d47a1); color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px; }
+
+    .dev-footer { margin-top: 40px; opacity: 0.8; transition: 0.3s; }
+    .dev-footer:hover { opacity: 1; transform: scale(1.05); }
+    .dev-logo { width: 60px; height: 60px; border-radius: 50%; box-shadow: 0px 5px 15px rgba(0,0,0,0.6); object-fit: cover; }
+
+    @keyframes popIn { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <!-- Audio SFX -->
+  <audio id="sfx-win" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" preload="auto"></audio>
+  <audio id="sfx-error" src="https://assets.mixkit.co/active_storage/sfx/2954/2954-preview.mp3" preload="auto"></audio>
+
+  <!-- SCREEN 1: Phone Verification -->
+  <div id="screen-phone" class="screen active card-3d">
+    <img src="alibhailogo.jpeg" class="restaurant-logo" alt="BJF Logo">
+    <h2 style="color: #e8b84b; margin-top: 0;">Spin & Win a Treat!</h2>
+    <p style="color: #cbb59a; font-size: 14px;">Enter your WhatsApp number to unlock today's premium dessert sample.</p>
+    <input type="number" id="phone" placeholder="10-digit Mobile Number">
+    <button class="btn-gold" onclick="verifyAndUnlock()">🎁 Unlock Surprise</button>
+  </div>
+
+  <!-- SCREEN 2: Reward Reveal -->
+  <div id="screen-reward" class="screen card-3d">
+    <p style="color:#e8b84b; font-size:12px; text-transform:uppercase; letter-spacing:2px; font-weight:bold; margin-top:0;">You Unlocked</p>
+    <h2 id="product-name" style="margin:5px 0;">Loading...</h2>
+    <img id="product-image" class="product-img" src="" alt="Dessert Treat" style="display: none;">
+    <p style="color:#cbb59a; font-size: 13px;">Show this screen at the counter to claim!</p>
+    
+    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05);">
+      <p style="margin-top:0; font-size: 14px; font-weight: bold;">How was the taste?</p>
+      <select id="rating">
+        <option value="5">⭐⭐⭐⭐⭐ - Delicious!</option>
+        <option value="4">⭐⭐⭐⭐ - Very Good</option>
+        <option value="3">⭐⭐⭐ - Okay</option>
+      </select>
+      <textarea id="feedback" placeholder="Your feedback..." rows="2"></textarea>
+      <button class="btn-green" onclick="submitFeedback()">Submit Feedback</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: Review Redirect -->
+  <div id="screen-done" class="screen card-3d">
+    <h2 style="color: #40d06a; margin-top:0;">Thank You!</h2>
+    <p style="color:#cbb59a;">Your feedback helps us perfect our desserts.</p>
+    <p style="font-size: 13px; color: #fff; margin-top: 25px; border-top: 1px solid #333; padding-top: 15px;">Support us with a 5-star Google review!</p>
+    
+    <button class="btn-google" onclick="autoCopyReview()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81z"/></svg>
+      Copy Review & Open Google
+    </button>
+  </div>
+
+  <!-- Developer Footer -->
+  <div class="dev-footer">
+    <a href="https://catb12345612-ai.github.io/Syed-Zeeshaan-Ali-High-Fledged-Engineering-And-Digital-Tech-Solutions-Site/" target="_blank" style="text-decoration: none; color: #8f7a63; font-size: 11px;">
+      <p style="margin-bottom: 5px;">Powered by</p>
+      <img src="dev-logo.png.png" class="dev-logo" alt="Developer Logo">
+      <p style="margin-top: 5px; font-weight: bold;">SZA Digital Solutions</p>
+    </a>
+  </div>
+
+  <script>
+    // --- INTEGRATED DATABASE URLs ---
+    const FIREBASE_URL = "https://gani-cafe-default-rtdb.asia-southeast1.firebasedatabase.app";
+    const GOOGLE_MAPS_LINK = "https://search.google.com/local/reviews?placeid=ChIJmxyKU3pZNDoRLuJ1ErrfKkE&q=Bangalore+Juicy+%26+Foods&authuser=0&hl=en&gl=IN";
+    
+    // REPLACE THIS WITH YOUR APPS SCRIPT URL ONCE GENERATED
+    const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbxkb_Zzr4e3YSXmqjeWMeixw1287oGedvxvj7KPBojsAc-iF0mKl1TlZOf-99NzLOITAA/exec"; 
+
+    let assignedItemName = "";
+    let userPhone = "";
+
+    async function verifyAndUnlock() {
+      userPhone = document.getElementById('phone').value;
+      if (userPhone.length !== 10) {
+        document.getElementById('sfx-error').play();
+        return alert("Please enter a valid 10-digit mobile number.");
+      }
+
+      try {
+        const response = await fetch(`${FIREBASE_URL}/claimed/${userPhone}.json`);
+        const isClaimed = await response.json();
+
+        if (isClaimed) {
+          document.getElementById('sfx-error').play();
+          alert("This number has already claimed a sample! One treat per customer.");
+        } else {
+          // Lock number instantly
+          await fetch(`${FIREBASE_URL}/claimed/${userPhone}.json`, { method: 'PUT', body: JSON.stringify(true) });
+          showRewardScreen();
+        }
+      } catch(e) {
+        alert("Network Error. Please check your internet connection.");
+      }
+    }
+
+    async function showRewardScreen() {
+      document.getElementById('screen-phone').classList.remove('active');
+      document.getElementById('screen-reward').classList.add('active');
+
+      document.getElementById('sfx-win').play();
+      confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 }, colors: ['#e8b84b', '#ffffff', '#3fbf6a'] });
+
+      try {
+        const res = await fetch(`${FIREBASE_URL}/products.json`);
+        const data = await res.json();
+        
+        const availableItems = [];
+        for (let key in data) {
+          if(data[key].inStock === true) {
+            availableItems.push(data[key]);
+          }
+        }
+
+        if(availableItems.length === 0) {
+           document.getElementById('product-name').innerText = "Special Chef's Blend";
+        } else {
+          const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+          assignedItemName = randomItem.name;
+          document.getElementById('product-name').innerText = randomItem.name;
+          
+          const imgElement = document.getElementById('product-image');
+          imgElement.src = randomItem.img;
+          imgElement.style.display = "block";
+        }
+      } catch(e) {
+        document.getElementById('product-name').innerText = "Special Chef's Treat";
+      }
+    }
+
+    function submitFeedback() {
+      const rating = document.getElementById('rating').value;
+      const feedback = document.getElementById('feedback').value;
+
+      document.getElementById('screen-reward').classList.remove('active');
+      document.getElementById('screen-done').classList.add('active');
+
+      fetch(GOOGLE_SHEETS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: userPhone, product: assignedItemName, rating: rating, feedback: feedback })
+      });
+    }
+
+    function autoCopyReview() {
+      // 15 Prefixes * 10 Suffixes = 150 Unique Output Combinations
+      const prefixes = [
+        "Absolutely loved the desserts at Bangalore Juicy Fruits! ", 
+        "Amazing quality and super fresh treats. ", 
+        "The hygiene and taste here are top-notch. ", 
+        "My new favorite spot for brownies and cheesecakes in Khammam. ", 
+        "Delicious, rich flavors with perfect texture. ", 
+        "Highly recommend this place for dessert lovers! ", 
+        "Fantastic service and the freshest items. ", 
+        "A must-visit cafe! The quality is unmatched. ", 
+        "Superb quantity and perfectly baked cakes. ", 
+        "Really amazing treats and great atmosphere. ", 
+        "The best fudges and brownies I have had in a long time. ", 
+        "Loved the complimentary sample system they have! ", 
+        "Very clean shop and incredibly quick service. ", 
+        "Premium quality desserts at a great price. ", 
+        "100% perfect taste and totally worth the visit. "
+      ];
+      const suffixes = [
+        "Will definitely come back.", 
+        "Highly recommended to everyone.", 
+        "5 stars from me!", 
+        "Keep up the great work.", 
+        "Can't wait to try more items.", 
+        "Perfect treat for any day.", 
+        "Customer service is outstanding.", 
+        "Very friendly and polite staff.", 
+        "The taste is consistently amazing.", 
+        "Worth every penny spent here."
+      ];
+
+      const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+      const randomSuffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+      const finalComment = randomPrefix + randomSuffix;
+
+      navigator.clipboard.writeText(finalComment).then(() => {
+        alert("A glowing 5-Star review has been copied to your clipboard!\n\nJust click PASTE on the Google Reviews page to support us.");
+        window.open(GOOGLE_MAPS_LINK, "_blank");
+      }).catch(() => {
+        window.open(GOOGLE_MAPS_LINK, "_blank");
+      });
+    }
+  </script>
+</body>
+</html>
