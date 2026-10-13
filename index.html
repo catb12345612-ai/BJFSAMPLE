@@ -112,7 +112,7 @@
     }
 
     h2 { color: var(--gold); margin-top: 0; letter-spacing: 1px; }
-    .lux-text { color: #cbb59a; font-size: 14.5px; line-height: 1.6; margin-bottom: 25px; font-weight: 300; }
+    .lux-text { color: #cbb59a; font-size: 14.5px; line-height: 1.6; margin-bottom: 20px; font-weight: 300; }
     
     input, select, textarea { 
       width: 100%; margin: 10px 0 20px; padding: 16px; 
@@ -146,6 +146,61 @@
     .btn-google { 
       background: linear-gradient(135deg, #4285F4, #0d47a1); 
       color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px; 
+    }
+
+    /* --- PREVIEW GRID UI --- */
+    .preview-container {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .preview-title {
+      font-size: 12px;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    .preview-grid {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+      /* Scrollbar hiding */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none;  /* IE and Edge */
+    }
+    .preview-grid::-webkit-scrollbar {
+      display: none; /* Chrome, Safari and Opera */
+    }
+    .preview-item {
+      min-width: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .preview-item img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--gold);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+    .preview-item p {
+      margin: 0;
+      font-size: 9px;
+      color: #cbb59a;
+      text-align: center;
+      line-height: 1.1;
+      width: 60px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* --- SLIDER / SPINNER UI --- */
@@ -241,7 +296,16 @@
     <!-- SCREEN 2: Spinning Slot -->
     <div id="screen-spin" class="screen card-glass">
       <h2 id="t-spin-title">Slide & Reveal</h2>
-      <p class="lux-text" id="t-spin-desc">Tap the button below to discover your complimentary masterpiece.</p>
+      
+      <!-- Preview section showing the 8 possible items -->
+      <div class="preview-container">
+        <p class="preview-title" id="t-preview-title">1 of these 8 will be yours:</p>
+        <div class="preview-grid" id="preview-grid">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+
+      <p class="lux-text" id="t-spin-desc" style="margin-bottom:15px; font-size:13px;">Tap the button below to discover your complimentary masterpiece.</p>
       
       <div class="slot-machine-container">
         <div class="slot-selector"></div>
@@ -312,6 +376,7 @@
         phonePlaceholder: "Enter 10-digit Mobile Number",
         btnUnlock: "🎁 Unlock Surprise",
         spinTitle: "Slide & Reveal",
+        previewTitle: "1 of these 8 will be yours:",
         spinDesc: "Tap the button below to discover your complimentary masterpiece.",
         btnSpin: "Spin Now",
         wonSubtitle: "You Unlocked",
@@ -337,6 +402,7 @@
         phonePlaceholder: "10-అంకెల మొబైల్ నంబర్‌ను నమోదు చేయండి",
         btnUnlock: "🎁 బహుమతిని తెరవండి",
         spinTitle: "స్పిన్ చేయండి",
+        previewTitle: "ఈ 8 లో ఒకటి మీ సొంతం:",
         spinDesc: "మీ ఉచిత బహుమతిని పొందేందుకు కింద ఉన్న బటన్‌ను నొక్కండి.",
         btnSpin: "ఇప్పుడే స్పిన్ చేయండి",
         wonSubtitle: "మీరు గెలుచుకున్నారు",
@@ -362,6 +428,7 @@
         phonePlaceholder: "10-अंकों का मोबाइल नंबर दर्ज करें",
         btnUnlock: "🎁 उपहार अनलॉक करें",
         spinTitle: "स्पिन और जीतें",
+        previewTitle: "इन 8 में से 1 आपका होगा:",
         spinDesc: "अपना मुफ्त उपहार खोजने के लिए नीचे दिए गए बटन पर टैप करें।",
         btnSpin: "अभी स्पिन करें",
         wonSubtitle: "आपने जीता है",
@@ -393,6 +460,7 @@
       document.getElementById('t-btn-unlock').innerText = dict.btnUnlock;
       
       document.getElementById('t-spin-title').innerText = dict.spinTitle;
+      document.getElementById('t-preview-title').innerText = dict.previewTitle;
       document.getElementById('t-spin-desc').innerText = dict.spinDesc;
       document.getElementById('t-btn-spin').innerText = dict.btnSpin;
 
@@ -484,7 +552,7 @@
       }
     }
 
-    // --- STEP 2: Spinner Engine ---
+    // --- STEP 2: Spinner Engine & Preview ---
     async function loadProductsForSpinner() {
       try {
         const res = await fetch(`${FIREBASE_URL}/products.json`);
@@ -497,19 +565,55 @@
         console.error("Using fallback items");
       }
 
-      // Fallback items if DB empty or errors
-      if (availableItems.length === 0) {
-        availableItems = [
-          { name: "Signature Brownie", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=200&auto=format&fit=crop" },
-          { name: "Premium Cheesecake", img: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?q=80&w=200&auto=format&fit=crop" },
-          { name: "Royal Fudge", img: "https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=200&auto=format&fit=crop" }
-        ];
+      // Default 8 items if Firebase empty or network fails
+      const fallbackItems = [
+        { name: "Choco Lava Cake", img: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?q=80&w=200&auto=format&fit=crop" },
+        { name: "Strawberry Tart", img: "https://images.unsplash.com/photo-1519869325930-281384150729?q=80&w=200&auto=format&fit=crop" },
+        { name: "Vanilla Bean Macaron", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?q=80&w=200&auto=format&fit=crop" },
+        { name: "Blueberry Cheesecake", img: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?q=80&w=200&auto=format&fit=crop" },
+        { name: "Dark Choco Fudge", img: "https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=200&auto=format&fit=crop" },
+        { name: "Caramel Pudding", img: "https://images.unsplash.com/photo-1588195538326-c5b1e9f6f5b4?q=80&w=200&auto=format&fit=crop" },
+        { name: "Red Velvet Brownie", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=200&auto=format&fit=crop" },
+        { name: "Mango Sorbet", img: "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?q=80&w=200&auto=format&fit=crop" }
+      ];
+
+      // Ensure we have exactly 8 items for the preview
+      let eightItemsForPreview = [];
+      if (availableItems.length >= 8) {
+        // Take the first 8 available from DB
+        eightItemsForPreview = availableItems.slice(0, 8);
+      } else if (availableItems.length > 0) {
+        // Mix DB items with fallback items to make exactly 8
+        eightItemsForPreview = [...availableItems];
+        let i = 0;
+        while(eightItemsForPreview.length < 8) {
+          eightItemsForPreview.push(fallbackItems[i % fallbackItems.length]);
+          i++;
+        }
+      } else {
+        // Just use the 8 fallbacks
+        eightItemsForPreview = fallbackItems;
+        availableItems = fallbackItems; // set availableItems to fallbacks so the spin works
       }
 
-      // Populate Track (Duplicate array to make a long spinning strip)
+      // 1. Populate the Preview Grid
+      const previewGrid = document.getElementById('preview-grid');
+      previewGrid.innerHTML = "";
+      eightItemsForPreview.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'preview-item';
+        div.innerHTML = `<img src="${item.img}" alt="${item.name}" onerror="this.src='https://ui-avatars.com/api/?name=Treat&background=D4AF37&color=fff'"><p>${item.name}</p>`;
+        previewGrid.appendChild(div);
+      });
+
+      // 2. Populate the Spin Track 
+      // Ensure we only spin through the 8 items shown in the preview to be fair/accurate
+      const itemsToSpin = eightItemsForPreview; 
+
       const track = document.getElementById('slot-track');
       track.innerHTML = ""; 
-      const spinStrip = [...availableItems, ...availableItems, ...availableItems, ...availableItems, ...availableItems];
+      // Duplicate array to make a long spinning strip
+      const spinStrip = [...itemsToSpin, ...itemsToSpin, ...itemsToSpin, ...itemsToSpin, ...itemsToSpin];
       
       spinStrip.forEach(item => {
         const div = document.createElement('div');
@@ -517,6 +621,10 @@
         div.innerHTML = `<img src="${item.img}" alt="${item.name}" onerror="this.src='https://ui-avatars.com/api/?name=Treat&background=D4AF37&color=fff'"><p>${item.name}</p>`;
         track.appendChild(div);
       });
+
+      // Update the global available items to strictly match the 8 preview items
+      // so the randomizer picks from these 8.
+      availableItems = itemsToSpin;
     }
 
     async function startSpin() {
@@ -527,7 +635,7 @@
       const track = document.getElementById('slot-track');
       
       // Calculate random stop index (in the 3rd or 4th set of duplicates)
-      const baseLen = availableItems.length;
+      const baseLen = availableItems.length; // Will be exactly 8 now
       const targetIndex = (baseLen * 3) + Math.floor(Math.random() * baseLen);
       
       // Assign the winning item
