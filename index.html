@@ -6,7 +6,7 @@
   <title>BJF Premium Surprise Treat</title>
   
   <!-- Premium Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   
   <style>
@@ -18,7 +18,7 @@
       --bg-gradient: linear-gradient(135deg, #ffffff 0%, #fcf8ee 100%);
       --card-bg: rgba(255, 255, 255, 0.95);
       --card-border: rgba(212, 175, 55, 0.3);
-      --text-dark: #2c2c2c;
+      --text-dark: #1a1a1a;
       --text-muted: #6b6b6b;
       --success: #28a745;
     }
@@ -32,11 +32,9 @@
       margin: 0; 
       display: flex; 
       flex-direction: column; 
-      align-items: center; 
-      justify-content: center; 
       min-height: 100vh; 
       text-align: center; 
-      overflow: hidden;
+      overflow: hidden; /* Only the container scrolls */
     }
 
     h1, h2, h3 { font-family: 'Playfair Display', serif; color: var(--gold-dark); margin-top: 0; letter-spacing: 0.5px; }
@@ -51,108 +49,112 @@
     }
     .glass-dessert {
       position: absolute;
-      width: 70px; height: 70px;
-      background: rgba(255, 255, 255, 0.6);
+      width: 75px; height: 75px;
+      background: rgba(255, 255, 255, 0.5);
       border: 1px solid rgba(212, 175, 55, 0.2);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border-radius: 20px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 35px;
-      box-shadow: 0 8px 25px 0 rgba(212, 175, 55, 0.15);
+      font-size: 40px;
+      box-shadow: 0 8px 30px 0 rgba(212, 175, 55, 0.15);
       animation: floatUp 20s infinite linear;
-      opacity: 0.85;
+      opacity: 0.8;
     }
     @keyframes floatUp {
       0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
-      10% { opacity: 0.85; }
-      90% { opacity: 0.85; }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.8; }
       100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
     }
 
     /* --- HEADER / LANGUAGE SELECTOR --- */
     .header {
-      position: absolute; top: 20px; right: 20px; z-index: 10;
+      position: fixed; top: 15px; right: 15px; z-index: 10;
     }
     .lang-select {
-      background: #fff;
+      background: rgba(255, 255, 255, 0.9);
       border: 1px solid var(--gold);
       color: var(--gold-dark);
       padding: 8px 15px;
       border-radius: 20px;
       font-weight: 600;
       font-family: 'Poppins', sans-serif;
-      box-shadow: 0 4px 10px rgba(212, 175, 55, 0.15);
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
       outline: none;
       cursor: pointer;
+      backdrop-filter: blur(5px);
     }
 
     /* --- SCREENS & CARDS --- */
     .screen-container {
-      width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center;
-      position: relative; z-index: 5;
-      padding: 20px;
+      width: 100%; 
+      height: 100vh;
       overflow-y: auto;
+      display: flex; 
+      flex-direction: column;
+      padding: 60px 20px 40px 20px; /* Padding for header and scroll */
     }
+    
     .screen { 
       display: none; 
       width: 100%; 
-      max-width: 420px; 
-      animation: fadeIn 0.5s ease-out; 
+      max-width: 440px; 
+      margin: auto; /* Centers vertically if small, scrolls if big */
+      animation: fadeIn 0.6s ease-out; 
     }
     .active { display: block; }
 
     .card-glass { 
       background: var(--card-bg); 
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       padding: 35px 25px; 
       border-radius: 25px; 
-      box-shadow: 0 15px 35px rgba(212, 175, 55, 0.1), inset 0 0 0 1px var(--card-border); 
+      box-shadow: 0 15px 40px rgba(212, 175, 55, 0.12), inset 0 0 0 1px var(--card-border); 
     }
 
     .restaurant-logo { 
-      width: 90px; height: 90px; 
+      width: 95px; height: 95px; 
       border-radius: 50%; 
-      box-shadow: 0px 8px 20px rgba(212, 175, 55, 0.2); 
+      box-shadow: 0px 8px 25px rgba(212, 175, 55, 0.25); 
       margin-bottom: 20px; 
-      border: 2px solid var(--gold); 
+      border: 3px solid var(--gold); 
       object-fit: cover; 
       background-color: #fff; 
     }
 
-    .lux-text { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin-bottom: 20px; font-weight: 400; }
+    .lux-text { color: var(--text-muted); font-size: 14.5px; line-height: 1.6; margin-bottom: 20px; font-weight: 400; }
     
     input, select, textarea { 
-      width: 100%; margin: 10px 0 20px; padding: 14px; 
+      width: 100%; margin: 10px 0 20px; padding: 15px; 
       border-radius: 12px; 
       border: 1px solid rgba(0, 0, 0, 0.1); 
       background: #fafafa; 
       color: var(--text-dark); font-size: 15px; 
       font-family: 'Poppins', sans-serif;
       outline: none; transition: 0.3s; 
-      box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
     }
     input:focus, select:focus, textarea:focus { 
       border: 1px solid var(--gold);
       background: #fff;
-      box-shadow: 0 0 10px rgba(212, 175, 55, 0.15); 
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.2); 
     }
 
     button { 
-      width: 100%; padding: 15px; border: none; border-radius: 12px; 
+      width: 100%; padding: 16px; border: none; border-radius: 12px; 
       font-weight: 600; font-size: 15px; cursor: pointer; 
       font-family: 'Poppins', sans-serif;
-      transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px;
+      transition: all 0.3s; text-transform: uppercase; letter-spacing: 1.5px;
     }
     button:active { transform: scale(0.97); }
 
     .btn-gold { 
       background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark)); 
       color: #fff; 
-      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-      box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 25px rgba(212, 175, 55, 0.35);
     }
     .btn-green { 
       background: linear-gradient(135deg, #40d06a, #1faa4f); 
@@ -162,6 +164,12 @@
       background: linear-gradient(135deg, #4285F4, #0d47a1); 
       color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px; 
     }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--gold);
+      color: var(--gold-dark);
+      margin-top: 25px;
+    }
 
     /* --- SURVEY UI --- */
     .survey-group {
@@ -169,44 +177,53 @@
       margin-bottom: 15px;
     }
     .survey-group label {
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 600;
       color: var(--gold-dark);
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       display: block;
     }
 
-    /* --- PREVIEW GRID UI --- */
-    .preview-container {
-      margin-bottom: 20px;
-      padding: 15px;
-      background: #fafafa;
-      border-radius: 15px;
-      border: 1px solid rgba(0,0,0,0.05);
+    /* --- GRAND LANDSCAPE SHOWCASE (NEW) --- */
+    .grand-showcase {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 35px;
+      margin-top: 15px;
     }
-    .preview-title {
-      font-size: 12px;
-      color: var(--text-muted);
-      text-transform: uppercase;
+    .showcase-card {
+      position: relative;
+      width: 100%;
+      height: 170px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      border: 2px solid var(--gold-light);
+    }
+    .showcase-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .showcase-card:hover img {
+      transform: scale(1.05);
+    }
+    .showcase-card-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+      padding: 20px 15px 15px 15px;
+      text-align: left;
+    }
+    .showcase-card-overlay h3 {
+      margin: 0;
+      color: #fff;
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
       letter-spacing: 1px;
-      margin-top: 0; margin-bottom: 10px; font-weight: 600;
-    }
-    .preview-grid {
-      display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .preview-grid::-webkit-scrollbar { display: none; }
-    .preview-item {
-      min-width: 60px; display: flex; flex-direction: column; align-items: center; gap: 5px;
-    }
-    .preview-item img {
-      width: 50px; height: 50px; border-radius: 50%; object-fit: cover;
-      border: 2px solid var(--gold-light); box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .preview-item p {
-      margin: 0; font-size: 10px; color: var(--text-dark); text-align: center;
-      line-height: 1.2; width: 60px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.8);
     }
 
     /* --- IMPROVED SLIDER / SPINNER UI --- */
@@ -214,7 +231,7 @@
       width: 100%; height: 180px; position: relative;
       background: #fff; border-radius: 20px;
       border: 2px solid var(--gold); overflow: hidden; margin-bottom: 25px;
-      box-shadow: inset 0 0 15px rgba(0,0,0,0.05), 0 8px 25px rgba(212, 175, 55, 0.2);
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.05), 0 8px 30px rgba(212, 175, 55, 0.25);
     }
     .slot-track {
       display: flex; flex-direction: row; height: 100%; align-items: center;
@@ -226,43 +243,43 @@
     .slot-item img {
       width: 90px; height: 90px; object-fit: cover; border-radius: 50%;
       border: 3px solid var(--gold); margin-bottom: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
     }
     .slot-item p {
       margin: 0; font-weight: 600; color: var(--text-dark); font-size: 16px;
     }
     
-    /* NEW PREMIUM SELECTION FRAME (Replaces the vertical line) */
+    /* PREMIUM SELECTION FRAME */
     .slot-selector {
       position: absolute; 
       top: 50%; 
       left: 50%; 
       transform: translate(-50%, -50%);
-      width: 110px; 
-      height: 155px; 
+      width: 120px; 
+      height: 160px; 
       border: 3px solid var(--gold); 
-      border-radius: 15px;
+      border-radius: 16px;
       z-index: 2;
-      background: rgba(212, 175, 55, 0.05); /* Very light gold glow inside */
-      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3), inset 0 0 15px rgba(212, 175, 55, 0.15);
-      pointer-events: none; /* Allows clicking through it */
+      background: rgba(212, 175, 55, 0.05); 
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.4), inset 0 0 15px rgba(212, 175, 55, 0.2);
+      pointer-events: none; 
     }
 
     .product-img { 
-      width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin: 15px 0; 
-      box-shadow: 0px 10px 25px rgba(0,0,0,0.1); border: 2px solid var(--gold-light); 
+      width: 100%; height: 220px; object-fit: cover; border-radius: 18px; margin: 15px 0; 
+      box-shadow: 0px 12px 30px rgba(0,0,0,0.15); border: 2px solid var(--gold-light); 
     }
 
-    .dev-footer { margin-top: 30px; opacity: 0.8; transition: 0.3s; text-align: center; }
+    .dev-footer { margin-top: 35px; opacity: 0.8; transition: 0.3s; text-align: center; }
     .dev-footer:hover { opacity: 1; transform: scale(1.02); }
-    .dev-logo { width: 45px; height: 45px; border-radius: 50%; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); object-fit: cover; }
+    .dev-logo { width: 45px; height: 45px; border-radius: 50%; box-shadow: 0px 4px 12px rgba(0,0,0,0.15); object-fit: cover; }
 
-    @keyframes fadeIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
 
-  <!-- Audio SFX (Unchanged) -->
+  <!-- Audio SFX -->
   <audio id="sfx-win" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" preload="auto"></audio>
   <audio id="sfx-error" src="https://assets.mixkit.co/active_storage/sfx/2954/2954-preview.mp3" preload="auto"></audio>
   <audio id="sfx-spin" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3" preload="auto"></audio>
@@ -328,22 +345,20 @@
       <button class="btn-gold" id="t-btn-next" onclick="submitSurvey()">Next: Spin & Win ➔</button>
     </div>
 
-    <!-- SCREEN 2: Spinning Slot -->
+    <!-- SCREEN 2: The Grand Showcase & Spinner -->
     <div id="screen-spin" class="screen card-glass">
-      <h2 id="t-spin-title">Spin & Win</h2>
+      <h2 id="t-spin-title">Today's Premium Treats</h2>
+      <p class="lux-text" id="t-spin-desc" style="font-size: 13px;">Scroll down to view our luxurious selection, then spin at the bottom to claim yours!</p>
       
-      <div class="preview-container">
-        <p class="preview-title" id="t-preview-title">1 of these 8 is yours today:</p>
-        <div class="preview-grid" id="preview-grid">
-          <!-- Dynamically populated via JS -->
-        </div>
+      <!-- NEW: Large Landscape Image Showcase -->
+      <div class="grand-showcase" id="grand-showcase">
+        <!-- Dynamically populated via JS -->
       </div>
 
-      <p class="lux-text" id="t-spin-desc" style="margin-bottom:15px; font-size:13px;">Tap the button below to see what you get!</p>
+      <h2 id="t-spin-action" style="margin-top: 10px; font-size: 22px;">Spin to Win!</h2>
       
       <!-- Improved Spinner Container -->
       <div class="slot-machine-container">
-        <!-- New selection frame instead of the line -->
         <div class="slot-selector"></div>
         <div class="slot-track" id="slot-track">
           <!-- Dynamically populated via JS -->
@@ -355,13 +370,13 @@
 
     <!-- SCREEN 3: Reward Reveal & Feedback -->
     <div id="screen-reward" class="screen card-glass">
-      <p style="color:var(--gold-dark); font-size:12px; text-transform:uppercase; letter-spacing:2px; font-weight:700; margin-top:0;" id="t-won-subtitle">You Won A</p>
+      <p style="color:var(--gold-dark); font-size:13px; text-transform:uppercase; letter-spacing:2px; font-weight:800; margin-top:0;" id="t-won-subtitle">You Won A</p>
       <h2 id="product-name" style="margin:5px 0; color: #111;">Loading...</h2>
       <img id="product-image" class="product-img" src="" alt="Dessert Treat" style="display: none;">
-      <p style="color:var(--text-muted); font-size: 14px; font-weight: 600;" id="t-claim-text">Show this screen at the counter to get your treat!</p>
+      <p style="color:var(--text-muted); font-size: 14.5px; font-weight: 600;" id="t-claim-text">Show this screen at the counter to get your treat!</p>
       
-      <div style="background: #fdfdfd; padding: 20px; border-radius: 15px; margin-top: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-        <p style="margin-top:0; font-size: 15px; font-weight: 700; color: var(--gold-dark);" id="t-feedback-title">Did you like the taste?</p>
+      <div style="background: #fdfdfd; padding: 20px; border-radius: 18px; margin-top: 25px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 5px 15px rgba(0,0,0,0.04);">
+        <p style="margin-top:0; font-size: 16px; font-weight: 700; color: var(--gold-dark);" id="t-feedback-title">Did you like the taste?</p>
         <select id="rating">
           <option value="5" id="t-rate-5">⭐⭐⭐⭐⭐ - Superb!</option>
           <option value="4" id="t-rate-4">⭐⭐⭐⭐ - Very Good</option>
@@ -372,16 +387,19 @@
       </div>
     </div>
 
-    <!-- SCREEN 4: Review Redirect -->
+    <!-- SCREEN 4: Review Redirect & Start Over -->
     <div id="screen-done" class="screen card-glass">
-      <h2 style="color: var(--success); margin-top:0;" id="t-thanks-title">Thank You!</h2>
-      <p class="lux-text" id="t-thanks-desc">Your feedback is saved. We hope you enjoyed it!</p>
-      <p style="font-size: 14px; color: var(--text-dark); margin-top: 20px; font-weight: 600;" id="t-google-desc">Please support us with a 5-Star Review on Google!</p>
+      <h2 style="color: var(--success); margin-top:0; font-size: 32px;" id="t-thanks-title">Thank You!</h2>
+      <p class="lux-text" id="t-thanks-desc" style="font-size: 15px;">Your feedback is saved. We hope you enjoyed it!</p>
+      <p style="font-size: 15px; color: var(--text-dark); margin-top: 25px; font-weight: 600;" id="t-google-desc">Please support us with a 5-Star Review on Google!</p>
       
       <button class="btn-google" id="t-btn-google" onclick="autoCopyReview()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81z"/></svg>
         Copy Review & Open Google
       </button>
+
+      <!-- NEW: Refresh / Start Over Button -->
+      <button class="btn-outline" id="t-btn-restart" onclick="resetSession()">⟳ Scan Next Customer</button>
 
       <!-- Developer Footer -->
       <div class="dev-footer">
@@ -406,7 +424,37 @@
     let userSurveyPref = "";
     let userSurveyFreq = "";
 
-    // --- TRANSLATIONS DICTIONARY (Simplified for easy local understanding) ---
+    // --- MALE WELCOME AUDIO SYSTEM ---
+    let welcomePlayed = false;
+    function playMaleWelcome() {
+      if (welcomePlayed) return; // Play only once
+      welcomePlayed = true;
+
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance("Welcome to Bangalore Juicy and Foods");
+        utterance.pitch = 0.2; // Deep, heavy tone
+        utterance.rate = 0.85; // Slightly slower, authoritative
+        utterance.volume = 1;
+
+        // Try to fetch a male English voice
+        const voices = window.speechSynthesis.getVoices();
+        const maleVoice = voices.find(v => 
+          (v.name.toLowerCase().includes('male') || 
+           v.name.toLowerCase().includes('guy') || 
+           v.name.toLowerCase().includes('david') || 
+           v.name.toLowerCase().includes('mark')) && 
+           v.lang.startsWith('en')
+        );
+        if (maleVoice) utterance.voice = maleVoice;
+
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+    // Browsers block audio until user interacts. We listen for the first touch/click.
+    document.addEventListener('click', playMaleWelcome, { once: true });
+    document.addEventListener('touchstart', playMaleWelcome, { once: true });
+
+    // --- TRANSLATIONS DICTIONARY ---
     const i18n = {
       en: {
         welcomeTitle: "Welcome to Bangalore Juicy!",
@@ -419,10 +467,10 @@
         opt1: "Ice Creams & Shakes", opt2: "Cakes & Pastries", opt3: "Brownies", opt4: "Snacks & Fast Food",
         survQ2: "How often do you visit us?",
         freq1: "First Time Visiting", freq2: "Weekly", freq3: "Monthly", freq4: "Rarely",
-        btnNext: "Next: Spin & Win ➔",
-        spinTitle: "Spin & Win",
-        previewTitle: "1 of these 8 is yours today:",
-        spinDesc: "Tap the button below to see what you get!",
+        btnNext: "Next: See Treats ➔",
+        spinTitle: "Today's Premium Treats",
+        spinDesc: "Scroll down to view our luxurious selection, then spin at the bottom to claim yours!",
+        spinAction: "Spin to Win!",
         btnSpin: "Spin Now",
         wonSubtitle: "You Won A",
         claimText: "Show this screen at the counter to get your treat!",
@@ -436,6 +484,7 @@
         thanksDesc: "Your feedback is saved. We hope you enjoyed it!",
         googleDesc: "Please support us with a 5-Star Review on Google!",
         btnGoogle: "Copy Review & Open Google",
+        btnRestart: "⟳ Scan Next Customer",
         errPhone: "Please enter a valid 10-digit mobile number.",
         errClaimed: "This number has already claimed a gift! Only one treat per customer.",
         errNetwork: "Network Error. Please check your internet connection.",
@@ -452,10 +501,10 @@
         opt1: "ఐస్ క్రీమ్స్ & షేక్స్", opt2: "కేక్స్ & పేస్ట్రీస్", opt3: "బ్రౌనీస్", opt4: "స్నాక్స్ & ఫాస్ట్ ఫుడ్",
         survQ2: "మీరు ఎంత తరచుగా వస్తుంటారు?",
         freq1: "మొదటిసారి వచ్చాను", freq2: "వారానికోసారి", freq3: "నెలకోసారి", freq4: "అరుదుగా",
-        btnNext: "తర్వాత: స్పిన్ & విన్ ➔",
-        spinTitle: "స్పిన్ చేసి గెలవండి",
-        previewTitle: "ఈ 8 లో ఒకటి మీదే:",
-        spinDesc: "మీ ఉచిత బహుమతిని చూసేందుకు బటన్‌ను నొక్కండి!",
+        btnNext: "తర్వాత: ఐటమ్స్ చూడండి ➔",
+        spinTitle: "నేటి ప్రీమియం స్వీట్స్",
+        spinDesc: "మా ప్రత్యేక ఐటమ్స్ చూడటానికి కిందకు స్క్రోల్ చేయండి, ఆపై బహుమతి కోసం స్పిన్ చేయండి!",
+        spinAction: "స్పిన్ చేసి గెలవండి!",
         btnSpin: "ఇప్పుడే స్పిన్ చేయండి",
         wonSubtitle: "మీరు గెలుచుకున్నారు",
         claimText: "కౌంటర్ వద్ద ఇది చూపించి మీ స్వీట్ తీసుకోండి!",
@@ -469,6 +518,7 @@
         thanksDesc: "మీ అభిప్రాయం సేవ్ చేయబడింది.",
         googleDesc: "5-స్టార్ గూగుల్ రివ్యూతో మమ్మల్ని సపోర్ట్ చేయండి!",
         btnGoogle: "రివ్యూ కాపీ చేసి గూగుల్ ఓపెన్ చేయండి",
+        btnRestart: "⟳ కొత్త కస్టమర్ కోసం రీస్టార్ట్",
         errPhone: "దయచేసి సరైన 10-అంకెల నంబర్‌ను నమోదు చేయండి.",
         errClaimed: "ఈ నంబర్ ఇప్పటికే బహుమతిని పొందింది! ఒక్కరికి ఒకటే బహుమతి.",
         errNetwork: "నెట్‌వర్క్ లోపం. మీ ఇంటర్నెట్ తనిఖీ చేయండి.",
@@ -485,10 +535,10 @@
         opt1: "आइसक्रीम और शेक्स", opt2: "केक और पेस्ट्री", opt3: "ब्राउनीज़", opt4: "स्नैक्स और फास्ट फूड",
         survQ2: "आप कितनी बार आते हैं?",
         freq1: "पहली बार", freq2: "हफ्ते में एक बार", freq3: "महीने में एक बार", freq4: "शायद ही कभी",
-        btnNext: "अगला: स्पिन और जीतें ➔",
-        spinTitle: "स्पिन और जीतें",
-        previewTitle: "इन 8 में से 1 आपका होगा:",
-        spinDesc: "अपना उपहार देखने के लिए नीचे बटन दबाएं!",
+        btnNext: "अगला: आइटम्स देखें ➔",
+        spinTitle: "आज के विशेष आइटम्स",
+        spinDesc: "हमारे शानदार आइटम्स देखने के लिए नीचे स्क्रॉल करें, फिर स्पिन करें!",
+        spinAction: "स्पिन और जीतें!",
         btnSpin: "अभी स्पिन करें",
         wonSubtitle: "आपने जीता है",
         claimText: "काउंटर पर इसे दिखाएं और अपना उपहार लें!",
@@ -502,6 +552,7 @@
         thanksDesc: "आपकी राय सेव हो गई है।",
         googleDesc: "5-स्टार गूगल रिव्यू के साथ हमारा सपोर्ट करें!",
         btnGoogle: "रिव्यू कॉपी करें और गूगल खोलें",
+        btnRestart: "⟳ नया सेशन शुरू करें",
         errPhone: "कृपया सही 10-अंकों का मोबाइल नंबर दर्ज करें।",
         errClaimed: "इस नंबर से पहले ही उपहार लिया जा चुका है! एक ग्राहक के लिए एक उपहार।",
         errNetwork: "नेटवर्क त्रुटि। कृपया अपना इंटरनेट जांचें।",
@@ -533,8 +584,8 @@
       document.getElementById('t-btn-next').innerText = dict.btnNext;
 
       document.getElementById('t-spin-title').innerText = dict.spinTitle;
-      document.getElementById('t-preview-title').innerText = dict.previewTitle;
       document.getElementById('t-spin-desc').innerText = dict.spinDesc;
+      document.getElementById('t-spin-action').innerText = dict.spinAction;
       document.getElementById('t-btn-spin').innerText = dict.btnSpin;
 
       document.getElementById('t-won-subtitle').innerText = dict.wonSubtitle;
@@ -549,17 +600,17 @@
       document.getElementById('t-thanks-title').innerText = dict.thanksTitle;
       document.getElementById('t-thanks-desc').innerText = dict.thanksDesc;
       document.getElementById('t-google-desc').innerText = dict.googleDesc;
+      document.getElementById('t-btn-restart').innerText = dict.btnRestart;
       
-      // Update google button HTML carefully to preserve SVG
       document.getElementById('t-btn-google').innerHTML = `
         <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81z"/></svg>
         ${dict.btnGoogle}
       `;
     }
 
-    // --- STATE PERSISTENCE (Anti-Refresh Loss) ---
+    // --- STATE PERSISTENCE ---
     window.onload = function() {
-      changeLanguage(); // Init language
+      changeLanguage();
       const savedState = localStorage.getItem('bjfState');
       if (savedState) {
         const state = JSON.parse(savedState);
@@ -580,6 +631,8 @@
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(screenId).classList.add('active');
+      // Scroll to top of container when changing screens
+      document.querySelector('.screen-container').scrollTop = 0;
     }
 
     function saveState(step) {
@@ -588,6 +641,12 @@
         item: assignedItem,
         step: step
       }));
+    }
+
+    // --- RESET SESSION (NEW REFRESH FUNCTION) ---
+    function resetSession() {
+      localStorage.removeItem('bjfState');
+      window.location.reload();
     }
 
     // --- STEP 1: Verify ---
@@ -614,7 +673,7 @@
           btn.innerText = i18n[lang].btnUnlock;
           btn.disabled = false;
         } else {
-          showScreen('screen-survey'); // Go to New Survey Screen
+          showScreen('screen-survey'); 
         }
       } catch(e) {
         alert(i18n[lang].errNetwork);
@@ -629,14 +688,14 @@
       userSurveyFreq = document.getElementById('survey-freq').value;
       
       const btn = document.getElementById('t-btn-next');
-      btn.innerText = "⏳ Loading Rewards...";
+      btn.innerText = "⏳ Loading Menu...";
       btn.disabled = true;
 
       await loadProductsForSpinner();
       showScreen('screen-spin');
     }
 
-    // --- STEP 2: Spinner Engine & Preview ---
+    // --- STEP 2: Spinner Engine & Grand Showcase ---
     async function loadProductsForSpinner() {
       try {
         const res = await fetch(`${FIREBASE_URL}/products.json`);
@@ -651,17 +710,17 @@
 
       // Default 8 items if Firebase empty or network fails
       const fallbackItems = [
-        { name: "Choco Lava Cake", img: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?q=80&w=200&auto=format&fit=crop" },
-        { name: "Strawberry Tart", img: "https://images.unsplash.com/photo-1519869325930-281384150729?q=80&w=200&auto=format&fit=crop" },
-        { name: "Vanilla Bean Macaron", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?q=80&w=200&auto=format&fit=crop" },
-        { name: "Blueberry Cheesecake", img: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?q=80&w=200&auto=format&fit=crop" },
-        { name: "Dark Choco Fudge", img: "https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=200&auto=format&fit=crop" },
-        { name: "Caramel Pudding", img: "https://images.unsplash.com/photo-1588195538326-c5b1e9f6f5b4?q=80&w=200&auto=format&fit=crop" },
-        { name: "Red Velvet Brownie", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=200&auto=format&fit=crop" },
-        { name: "Mango Sorbet", img: "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?q=80&w=200&auto=format&fit=crop" }
+        { name: "Choco Lava Cake", img: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?q=80&w=600&auto=format&fit=crop" },
+        { name: "Strawberry Tart", img: "https://images.unsplash.com/photo-1519869325930-281384150729?q=80&w=600&auto=format&fit=crop" },
+        { name: "Vanilla Bean Macaron", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?q=80&w=600&auto=format&fit=crop" },
+        { name: "Blueberry Cheesecake", img: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?q=80&w=600&auto=format&fit=crop" },
+        { name: "Dark Choco Fudge", img: "https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=600&auto=format&fit=crop" },
+        { name: "Caramel Pudding", img: "https://images.unsplash.com/photo-1588195538326-c5b1e9f6f5b4?q=80&w=600&auto=format&fit=crop" },
+        { name: "Red Velvet Brownie", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=600&auto=format&fit=crop" },
+        { name: "Mango Sorbet", img: "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?q=80&w=600&auto=format&fit=crop" }
       ];
 
-      // Ensure we have exactly 8 items for the preview
+      // Ensure we have exactly 8 items
       let eightItemsForPreview = [];
       if (availableItems.length >= 8) {
         eightItemsForPreview = availableItems.slice(0, 8);
@@ -676,14 +735,19 @@
         eightItemsForPreview = fallbackItems;
       }
 
-      // 1. Populate the Preview Grid
-      const previewGrid = document.getElementById('preview-grid');
-      previewGrid.innerHTML = "";
+      // 1. Populate the NEW Grand Landscape Showcase
+      const showcaseGrid = document.getElementById('grand-showcase');
+      showcaseGrid.innerHTML = "";
       eightItemsForPreview.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'preview-item';
-        div.innerHTML = `<img src="${item.img}" alt="${item.name}" onerror="this.src='https://ui-avatars.com/api/?name=Treat&background=D4AF37&color=fff'"><p>${item.name}</p>`;
-        previewGrid.appendChild(div);
+        const card = document.createElement('div');
+        card.className = 'showcase-card';
+        card.innerHTML = `
+          <img src="${item.img}" alt="${item.name}" onerror="this.src='https://ui-avatars.com/api/?name=Treat&background=D4AF37&color=fff'">
+          <div class="showcase-card-overlay">
+            <h3>${item.name}</h3>
+          </div>
+        `;
+        showcaseGrid.appendChild(card);
       });
 
       // 2. Populate the Spin Track 
@@ -742,7 +806,7 @@
       imgElement.style.display = "block";
     }
 
-    // --- STEP 3: Feedback (Now Includes Survey Data) ---
+    // --- STEP 3: Feedback ---
     function submitFeedback() {
       const rating = document.getElementById('rating').value;
       const feedback = document.getElementById('feedback').value;
@@ -751,7 +815,6 @@
       btn.innerText = "Saving...";
       btn.disabled = true;
 
-      // Passing extra Survey details inside the feedback parameter string for Apps Script flexibility
       const combinedFeedback = `[Fav: ${userSurveyPref}, Freq: ${userSurveyFreq}] - ${feedback}`;
 
       fetch(GOOGLE_SHEETS_URL, {
