@@ -4,23 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>BJF Premium Surprise Treat</title>
+  
+  <!-- Premium Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
   <style>
     :root {
       --gold: #D4AF37;
       --gold-light: #F9E596;
       --gold-dark: #AA8C2C;
-      --bg-dark: #0f0f13;
-      --glass-bg: rgba(30, 30, 40, 0.6);
-      --glass-border: rgba(212, 175, 55, 0.2);
-      --success: #40d06a;
+      --bg-light: #ffffff;
+      --bg-gradient: linear-gradient(135deg, #ffffff 0%, #fcf8ee 100%);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --card-border: rgba(212, 175, 55, 0.3);
+      --text-dark: #2c2c2c;
+      --text-muted: #6b6b6b;
+      --success: #28a745;
     }
 
-    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    * { box-sizing: border-box; }
     
     body { 
-      background: radial-gradient(circle at center, #1a1a24 0%, #08080a 100%); 
-      color: #fff; 
+      background: var(--bg-gradient); 
+      color: var(--text-dark); 
+      font-family: 'Poppins', sans-serif;
       margin: 0; 
       display: flex; 
       flex-direction: column; 
@@ -28,10 +36,12 @@
       justify-content: center; 
       min-height: 100vh; 
       text-align: center; 
-      overflow: hidden; /* Prevent scrolling body to keep background locked */
+      overflow: hidden;
     }
 
-    /* --- GLASSMORPHISM BACKGROUND ANIMATIONS --- */
+    h1, h2, h3 { font-family: 'Playfair Display', serif; color: var(--gold-dark); margin-top: 0; letter-spacing: 0.5px; }
+
+    /* --- PREMIUM BACKGROUND ANIMATIONS --- */
     .bg-animations {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -39,25 +49,19 @@
       z-index: -1;
       pointer-events: none;
     }
-    .glass-dessert {
+    .gold-dust {
       position: absolute;
-      width: 80px; height: 80px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-radius: 20px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 40px;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-      animation: floatUp 20s infinite linear;
-      opacity: 0.7;
+      width: 15px; height: 15px;
+      background: radial-gradient(circle, var(--gold-light) 0%, transparent 70%);
+      border-radius: 50%;
+      opacity: 0.4;
+      animation: floatUp 15s infinite linear;
     }
     @keyframes floatUp {
-      0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
-      10% { opacity: 0.6; }
-      90% { opacity: 0.6; }
-      100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+      0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
+      20% { opacity: 0.6; }
+      80% { opacity: 0.6; }
+      100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
     }
 
     /* --- HEADER / LANGUAGE SELECTOR --- */
@@ -65,13 +69,14 @@
       position: absolute; top: 20px; right: 20px; z-index: 10;
     }
     .lang-select {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      color: var(--gold-light);
+      background: #fff;
+      border: 1px solid var(--gold);
+      color: var(--gold-dark);
       padding: 8px 15px;
       border-radius: 20px;
-      font-weight: bold;
-      backdrop-filter: blur(10px);
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      box-shadow: 0 4px 10px rgba(212, 175, 55, 0.15);
       outline: none;
       cursor: pointer;
     }
@@ -88,188 +93,172 @@
       display: none; 
       width: 100%; 
       max-width: 420px; 
-      animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+      animation: fadeIn 0.5s ease-out; 
     }
     .active { display: block; }
 
     .card-glass { 
-      background: var(--glass-bg); 
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: var(--card-bg); 
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       padding: 35px 25px; 
-      border-radius: 30px; 
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 1px var(--glass-border); 
+      border-radius: 25px; 
+      box-shadow: 0 15px 35px rgba(212, 175, 55, 0.1), inset 0 0 0 1px var(--card-border); 
     }
 
     .restaurant-logo { 
-      width: 100px; height: 100px; 
+      width: 90px; height: 90px; 
       border-radius: 50%; 
-      box-shadow: 0px 10px 30px rgba(212, 175, 55, 0.3); 
+      box-shadow: 0px 8px 20px rgba(212, 175, 55, 0.2); 
       margin-bottom: 20px; 
       border: 2px solid var(--gold); 
       object-fit: cover; 
       background-color: #fff; 
     }
 
-    h2 { color: var(--gold); margin-top: 0; letter-spacing: 1px; }
-    .lux-text { color: #cbb59a; font-size: 14.5px; line-height: 1.6; margin-bottom: 20px; font-weight: 300; }
+    .lux-text { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin-bottom: 20px; font-weight: 400; }
     
     input, select, textarea { 
-      width: 100%; margin: 10px 0 20px; padding: 16px; 
-      border-radius: 15px; 
-      border: 1px solid rgba(255, 255, 255, 0.1); 
-      background: rgba(0, 0, 0, 0.4); 
-      color: #fff; font-size: 16px; 
+      width: 100%; margin: 10px 0 20px; padding: 14px; 
+      border-radius: 12px; 
+      border: 1px solid rgba(0, 0, 0, 0.1); 
+      background: #fafafa; 
+      color: var(--text-dark); font-size: 15px; 
+      font-family: 'Poppins', sans-serif;
       outline: none; transition: 0.3s; 
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
     }
     input:focus, select:focus, textarea:focus { 
       border: 1px solid var(--gold);
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2); 
+      background: #fff;
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.15); 
     }
 
     button { 
-      width: 100%; padding: 16px; border: none; border-radius: 15px; 
-      font-weight: 800; font-size: 16px; cursor: pointer; 
+      width: 100%; padding: 15px; border: none; border-radius: 12px; 
+      font-weight: 600; font-size: 15px; cursor: pointer; 
+      font-family: 'Poppins', sans-serif;
       transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px;
     }
-    button:active { transform: scale(0.96); }
+    button:active { transform: scale(0.97); }
 
     .btn-gold { 
       background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark)); 
-      color: #140b07; 
-      box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+      color: #fff; 
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
     }
     .btn-green { 
       background: linear-gradient(135deg, #40d06a, #1faa4f); 
-      color: #fff; box-shadow: 0 10px 20px rgba(64, 208, 106, 0.3);
+      color: #fff; box-shadow: 0 8px 20px rgba(64, 208, 106, 0.25);
     }
     .btn-google { 
       background: linear-gradient(135deg, #4285F4, #0d47a1); 
-      color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px; 
+      color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px; 
+    }
+
+    /* --- SURVEY UI (NEW) --- */
+    .survey-group {
+      text-align: left;
+      margin-bottom: 15px;
+    }
+    .survey-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gold-dark);
+      margin-bottom: 5px;
+      display: block;
     }
 
     /* --- PREVIEW GRID UI --- */
     .preview-container {
       margin-bottom: 20px;
       padding: 15px;
-      background: rgba(0,0,0,0.3);
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.05);
+      background: #fafafa;
+      border-radius: 15px;
+      border: 1px solid rgba(0,0,0,0.05);
     }
     .preview-title {
       font-size: 12px;
-      color: var(--gold-light);
+      color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-top: 0;
-      margin-bottom: 10px;
+      margin-top: 0; margin-bottom: 10px; font-weight: 600;
     }
     .preview-grid {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 5px;
-      /* Scrollbar hiding */
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none;  /* IE and Edge */
+      display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
-    .preview-grid::-webkit-scrollbar {
-      display: none; /* Chrome, Safari and Opera */
-    }
+    .preview-grid::-webkit-scrollbar { display: none; }
     .preview-item {
-      min-width: 60px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
+      min-width: 60px; display: flex; flex-direction: column; align-items: center; gap: 5px;
     }
     .preview-item img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid var(--gold);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+      width: 50px; height: 50px; border-radius: 50%; object-fit: cover;
+      border: 2px solid var(--gold-light); box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .preview-item p {
-      margin: 0;
-      font-size: 9px;
-      color: #cbb59a;
-      text-align: center;
-      line-height: 1.1;
-      width: 60px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      margin: 0; font-size: 10px; color: var(--text-dark); text-align: center;
+      line-height: 1.2; width: 60px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
     /* --- SLIDER / SPINNER UI --- */
     .slot-machine-container {
-      width: 100%; height: 160px;
-      position: relative;
-      background: rgba(0,0,0,0.5);
-      border-radius: 20px;
-      border: 2px solid var(--gold);
-      overflow: hidden;
-      margin-bottom: 25px;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+      width: 100%; height: 160px; position: relative;
+      background: #fff; border-radius: 20px;
+      border: 2px solid var(--gold); overflow: hidden; margin-bottom: 25px;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.05), 0 8px 25px rgba(212, 175, 55, 0.2);
     }
     .slot-track {
-      display: flex;
-      flex-direction: row;
-      height: 100%;
-      align-items: center;
+      display: flex; flex-direction: row; height: 100%; align-items: center;
       transition: transform 4s cubic-bezier(0.1, 0.9, 0.2, 1);
     }
     .slot-item {
-      min-width: 100%; height: 100%;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 10px;
+      min-width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px;
     }
     .slot-item img {
       width: 80px; height: 80px; object-fit: cover; border-radius: 50%;
-      border: 2px solid var(--gold-light); margin-bottom: 10px;
+      border: 3px solid var(--gold); margin-bottom: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     .slot-item p {
-      margin: 0; font-weight: bold; color: #fff; font-size: 16px; text-shadow: 1px 1px 4px #000;
+      margin: 0; font-weight: 600; color: var(--text-dark); font-size: 16px;
     }
     .slot-selector {
-      position: absolute;
-      top: 0; left: 50%; transform: translateX(-50%);
-      width: 4px; height: 100%;
-      background: rgba(255, 255, 255, 0.4);
-      z-index: 2;
-      box-shadow: 0 0 10px #fff;
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 4px; height: 100%; background: var(--gold); z-index: 2;
+      box-shadow: 0 0 10px var(--gold-light);
     }
 
     .product-img { 
-      width: 100%; height: 200px; object-fit: cover; border-radius: 20px; margin: 15px 0; 
-      box-shadow: 0px 10px 20px rgba(0,0,0,0.5); border: 2px solid var(--gold); 
+      width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin: 15px 0; 
+      box-shadow: 0px 10px 25px rgba(0,0,0,0.1); border: 2px solid var(--gold-light); 
     }
 
-    .dev-footer { margin-top: 30px; opacity: 0.7; transition: 0.3s; text-align: center; }
-    .dev-footer:hover { opacity: 1; transform: scale(1.05); }
-    .dev-logo { width: 50px; height: 50px; border-radius: 50%; box-shadow: 0px 5px 15px rgba(0,0,0,0.6); object-fit: cover; }
+    .dev-footer { margin-top: 30px; opacity: 0.8; transition: 0.3s; text-align: center; }
+    .dev-footer:hover { opacity: 1; transform: scale(1.02); }
+    .dev-logo { width: 45px; height: 45px; border-radius: 50%; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); object-fit: cover; }
 
-    @keyframes popIn { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes fadeIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
 
-  <!-- Audio SFX -->
+  <!-- Audio SFX (Unchanged) -->
   <audio id="sfx-win" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" preload="auto"></audio>
   <audio id="sfx-error" src="https://assets.mixkit.co/active_storage/sfx/2954/2954-preview.mp3" preload="auto"></audio>
   <audio id="sfx-spin" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3" preload="auto"></audio>
 
-  <!-- Background Glass Desserts -->
+  <!-- Premium Background Animation (Gold Dust) -->
   <div class="bg-animations">
-    <div class="glass-dessert" style="left: 10%; animation-duration: 18s; animation-delay: 0s;">🍰</div>
-    <div class="glass-dessert" style="left: 30%; animation-duration: 22s; animation-delay: -5s;">🍨</div>
-    <div class="glass-dessert" style="left: 50%; animation-duration: 20s; animation-delay: -2s;">🧁</div>
-    <div class="glass-dessert" style="left: 70%; animation-duration: 25s; animation-delay: -8s;">🍮</div>
-    <div class="glass-dessert" style="left: 85%; animation-duration: 19s; animation-delay: -12s;">🍫</div>
-    <div class="glass-dessert" style="left: 20%; animation-duration: 24s; animation-delay: -15s;">🍩</div>
-    <div class="glass-dessert" style="left: 60%; animation-duration: 21s; animation-delay: -7s;">🍪</div>
+    <div class="gold-dust" style="left: 15%; animation-duration: 12s; animation-delay: 0s;"></div>
+    <div class="gold-dust" style="left: 35%; animation-duration: 18s; animation-delay: -5s;"></div>
+    <div class="gold-dust" style="left: 55%; animation-duration: 14s; animation-delay: -2s;"></div>
+    <div class="gold-dust" style="left: 75%; animation-duration: 20s; animation-delay: -8s;"></div>
+    <div class="gold-dust" style="left: 85%; animation-duration: 16s; animation-delay: -12s;"></div>
+    <div class="gold-dust" style="left: 20%; animation-duration: 19s; animation-delay: -15s;"></div>
+    <div class="gold-dust" style="left: 65%; animation-duration: 17s; animation-delay: -7s;"></div>
   </div>
 
   <!-- Language Selector -->
@@ -282,30 +271,58 @@
   </div>
 
   <div class="screen-container">
+    
     <!-- SCREEN 1: Welcome & Phone -->
     <div id="screen-phone" class="screen card-glass active">
       <img src="bjf_logo_circle.png" class="restaurant-logo" alt="BJF Logo" onerror="this.src='https://ui-avatars.com/api/?name=BJF&background=D4AF37&color=fff&rounded=true'">
-      <h2 id="t-welcome-title">A Taste of Excellence</h2>
+      <h2 id="t-welcome-title">Welcome to Bangalore Juicy!</h2>
       <p class="lux-text" id="t-welcome-desc">
-        At Bangalore Juicy & Foods, we believe in the art of tasting. We invite you to experience our culinary craftsmanship with a complimentary premium treat. Savor the passion, taste the perfection.
+        Thank you for choosing us in Khammam. Enter your mobile number below to claim your free special sweet treat today!
       </p>
       <input type="number" id="phone" placeholder="Enter 10-digit Mobile Number">
-      <button class="btn-gold" id="t-btn-unlock" onclick="verifyPhone()">🎁 Unlock Surprise</button>
+      <button class="btn-gold" id="t-btn-unlock" onclick="verifyPhone()">🎁 Get My Free Gift</button>
+    </div>
+
+    <!-- SCREEN 1.5: Survey (NEW FEATURE) -->
+    <div id="screen-survey" class="screen card-glass">
+      <h2 id="t-survey-title">Quick Question!</h2>
+      <p class="lux-text" id="t-survey-desc">Help us serve you better by answering two simple questions before you spin.</p>
+      
+      <div class="survey-group">
+        <label id="t-surv-q1">What is your favorite item here?</label>
+        <select id="survey-pref">
+          <option value="Ice Creams & Shakes" id="t-opt-1">Ice Creams & Shakes</option>
+          <option value="Cakes & Pastries" id="t-opt-2">Cakes & Pastries</option>
+          <option value="Brownies" id="t-opt-3">Brownies</option>
+          <option value="Snacks & Fast Food" id="t-opt-4">Snacks & Fast Food</option>
+        </select>
+      </div>
+
+      <div class="survey-group">
+        <label id="t-surv-q2">How often do you visit us?</label>
+        <select id="survey-freq">
+          <option value="First Time" id="t-freq-1">First Time Visiting</option>
+          <option value="Weekly" id="t-freq-2">Weekly</option>
+          <option value="Monthly" id="t-freq-3">Monthly</option>
+          <option value="Rarely" id="t-freq-4">Rarely</option>
+        </select>
+      </div>
+
+      <button class="btn-gold" id="t-btn-next" onclick="submitSurvey()">Next: Spin & Win ➔</button>
     </div>
 
     <!-- SCREEN 2: Spinning Slot -->
     <div id="screen-spin" class="screen card-glass">
-      <h2 id="t-spin-title">Slide & Reveal</h2>
+      <h2 id="t-spin-title">Spin & Win</h2>
       
-      <!-- Preview section showing the 8 possible items -->
       <div class="preview-container">
-        <p class="preview-title" id="t-preview-title">1 of these 8 will be yours:</p>
+        <p class="preview-title" id="t-preview-title">1 of these 8 is yours today:</p>
         <div class="preview-grid" id="preview-grid">
           <!-- Dynamically populated via JS -->
         </div>
       </div>
 
-      <p class="lux-text" id="t-spin-desc" style="margin-bottom:15px; font-size:13px;">Tap the button below to discover your complimentary masterpiece.</p>
+      <p class="lux-text" id="t-spin-desc" style="margin-bottom:15px; font-size:13px;">Tap the button below to see what you get!</p>
       
       <div class="slot-machine-container">
         <div class="slot-selector"></div>
@@ -319,47 +336,47 @@
 
     <!-- SCREEN 3: Reward Reveal & Feedback -->
     <div id="screen-reward" class="screen card-glass">
-      <p style="color:var(--gold); font-size:12px; text-transform:uppercase; letter-spacing:2px; font-weight:bold; margin-top:0;" id="t-won-subtitle">You Unlocked</p>
-      <h2 id="product-name" style="margin:5px 0;">Loading...</h2>
+      <p style="color:var(--gold-dark); font-size:12px; text-transform:uppercase; letter-spacing:2px; font-weight:700; margin-top:0;" id="t-won-subtitle">You Won A</p>
+      <h2 id="product-name" style="margin:5px 0; color: #111;">Loading...</h2>
       <img id="product-image" class="product-img" src="" alt="Dessert Treat" style="display: none;">
-      <p style="color:#cbb59a; font-size: 13px;" id="t-claim-text">Show this screen at the counter to claim!</p>
+      <p style="color:var(--text-muted); font-size: 14px; font-weight: 600;" id="t-claim-text">Show this screen at the counter to get your treat!</p>
       
-      <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 20px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05);">
-        <p style="margin-top:0; font-size: 15px; font-weight: bold;" id="t-feedback-title">How was the taste?</p>
+      <div style="background: #fdfdfd; padding: 20px; border-radius: 15px; margin-top: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+        <p style="margin-top:0; font-size: 15px; font-weight: 700; color: var(--gold-dark);" id="t-feedback-title">Did you like the taste?</p>
         <select id="rating">
-          <option value="5" id="t-rate-5">⭐⭐⭐⭐⭐ - Masterpiece!</option>
+          <option value="5" id="t-rate-5">⭐⭐⭐⭐⭐ - Superb!</option>
           <option value="4" id="t-rate-4">⭐⭐⭐⭐ - Very Good</option>
-          <option value="3" id="t-rate-3">⭐⭐⭐ - Okay</option>
+          <option value="3" id="t-rate-3">⭐⭐⭐ - It was Okay</option>
         </select>
-        <textarea id="feedback" placeholder="Your feedback..." rows="2"></textarea>
-        <button class="btn-green" id="t-btn-submit" onclick="submitFeedback()">Submit Feedback</button>
+        <textarea id="feedback" placeholder="Tell us more..." rows="2"></textarea>
+        <button class="btn-green" id="t-btn-submit" onclick="submitFeedback()">Send Feedback</button>
       </div>
     </div>
 
     <!-- SCREEN 4: Review Redirect -->
     <div id="screen-done" class="screen card-glass">
       <h2 style="color: var(--success); margin-top:0;" id="t-thanks-title">Thank You!</h2>
-      <p style="color:#cbb59a;" id="t-thanks-desc">Your feedback helps us perfect our desserts.</p>
-      <p style="font-size: 13px; color: #fff; margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;" id="t-google-desc">Support us with a 5-star Google review!</p>
+      <p class="lux-text" id="t-thanks-desc">Your feedback is saved. We hope you enjoyed it!</p>
+      <p style="font-size: 14px; color: var(--text-dark); margin-top: 20px; font-weight: 600;" id="t-google-desc">Please support us with a 5-Star Review on Google!</p>
       
       <button class="btn-google" id="t-btn-google" onclick="autoCopyReview()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81z"/></svg>
         Copy Review & Open Google
       </button>
 
-      <!-- Developer Footer inside last screen for neatness -->
+      <!-- Developer Footer -->
       <div class="dev-footer">
-        <a href="https://catb12345612-ai.github.io/Syed-Zeeshaan-Ali-High-Fledged-Engineering-And-Digital-Tech-Solutions-Site/" target="_blank" style="text-decoration: none; color: #8f7a63; font-size: 11px;">
+        <a href="https://catb12345612-ai.github.io/Syed-Zeeshaan-Ali-High-Fledged-Engineering-And-Digital-Tech-Solutions-Site/" target="_blank" style="text-decoration: none; color: var(--text-muted); font-size: 11px;">
           <p style="margin-bottom: 5px;">Powered by</p>
           <img src="dev-logo.png.png" class="dev-logo" alt="Developer Logo" onerror="this.style.display='none'">
-          <p style="margin-top: 5px; font-weight: bold; line-height: 1.4;">Syed Zeeshaan Ali<br>High-Fledged-Engineering & Digital Tech Solutions</p>
+          <p style="margin-top: 5px; font-weight: 600; line-height: 1.4; color: var(--text-dark);">Syed Zeeshaan Ali<br>High-Fledged-Engineering & Digital Tech Solutions</p>
         </a>
       </div>
     </div>
   </div>
 
   <script>
-    // --- INTEGRATED DATABASE URLs ---
+    // --- INTEGRATED DATABASE URLs (Strictly Unchanged) ---
     const FIREBASE_URL = "https://gani-cafe-default-rtdb.asia-southeast1.firebasedatabase.app";
     const GOOGLE_MAPS_LINK = "https://search.google.com/local/reviews?placeid=ChIJmxyKU3pZNDoRLuJ1ErrfKkE&q=Bangalore+Juicy+%26+Foods&authuser=0&hl=en&gl=IN";
     const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbxkb_Zzr4e3YSXmqjeWMeixw1287oGedvxvj7KPBojsAc-iF0mKl1TlZOf-99NzLOITAA/exec"; 
@@ -367,46 +384,62 @@
     let availableItems = [];
     let assignedItem = null;
     let userPhone = "";
+    let userSurveyPref = "";
+    let userSurveyFreq = "";
 
-    // --- TRANSLATIONS DICTIONARY ---
+    // --- TRANSLATIONS DICTIONARY (Simplified for easy local understanding) ---
     const i18n = {
       en: {
-        welcomeTitle: "A Taste of Excellence",
-        welcomeDesc: "At Bangalore Juicy & Foods, we believe in the art of tasting. We invite you to experience our culinary craftsmanship with a complimentary premium treat. Savor the passion, taste the perfection.",
+        welcomeTitle: "Welcome to Bangalore Juicy!",
+        welcomeDesc: "Thank you for choosing us in Khammam. Enter your mobile number below to claim your free special sweet treat today!",
         phonePlaceholder: "Enter 10-digit Mobile Number",
-        btnUnlock: "🎁 Unlock Surprise",
-        spinTitle: "Slide & Reveal",
-        previewTitle: "1 of these 8 will be yours:",
-        spinDesc: "Tap the button below to discover your complimentary masterpiece.",
+        btnUnlock: "🎁 Get My Free Gift",
+        surveyTitle: "Quick Question!",
+        surveyDesc: "Help us serve you better by answering two simple questions before you spin.",
+        survQ1: "What is your favorite item here?",
+        opt1: "Ice Creams & Shakes", opt2: "Cakes & Pastries", opt3: "Brownies", opt4: "Snacks & Fast Food",
+        survQ2: "How often do you visit us?",
+        freq1: "First Time Visiting", freq2: "Weekly", freq3: "Monthly", freq4: "Rarely",
+        btnNext: "Next: Spin & Win ➔",
+        spinTitle: "Spin & Win",
+        previewTitle: "1 of these 8 is yours today:",
+        spinDesc: "Tap the button below to see what you get!",
         btnSpin: "Spin Now",
-        wonSubtitle: "You Unlocked",
-        claimText: "Show this screen at the counter to claim!",
-        feedbackTitle: "How was the taste?",
-        rate5: "⭐⭐⭐⭐⭐ - Masterpiece!",
+        wonSubtitle: "You Won A",
+        claimText: "Show this screen at the counter to get your treat!",
+        feedbackTitle: "Did you like the taste?",
+        rate5: "⭐⭐⭐⭐⭐ - Superb!",
         rate4: "⭐⭐⭐⭐ - Very Good",
-        rate3: "⭐⭐⭐ - Okay",
-        feedbackPlaceholder: "Your feedback...",
-        btnSubmit: "Submit Feedback",
+        rate3: "⭐⭐⭐ - It was Okay",
+        feedbackPlaceholder: "Tell us more...",
+        btnSubmit: "Send Feedback",
         thanksTitle: "Thank You!",
-        thanksDesc: "Your feedback helps us perfect our desserts.",
-        googleDesc: "Support us with a 5-star Google review!",
+        thanksDesc: "Your feedback is saved. We hope you enjoyed it!",
+        googleDesc: "Please support us with a 5-Star Review on Google!",
         btnGoogle: "Copy Review & Open Google",
         errPhone: "Please enter a valid 10-digit mobile number.",
-        errClaimed: "This number has already claimed a sample! One treat per customer.",
+        errClaimed: "This number has already claimed a gift! Only one treat per customer.",
         errNetwork: "Network Error. Please check your internet connection.",
-        clipboardMsg: "A glowing 5-Star review has been copied to your clipboard!\n\nJust click PASTE on the Google Reviews page to support us."
+        clipboardMsg: "A 5-Star review text is copied to your clipboard!\n\nJust click PASTE on the Google Reviews page to help our business grow."
       },
       te: {
-        welcomeTitle: "రుచుల అద్భుతం",
-        welcomeDesc: "బెంగుళూరు జ్యూసీ అండ్ ఫుడ్స్‌లో, రుచి చూసే కళను మేము విశ్వసిస్తాము. మా ఉచిత ప్రీమియం స్వీట్ తో మా వంటకాల నైపుణ్యాన్ని అనుభవించమని మేము మిమ్మల్ని ఆహ్వానిస్తున్నాము. పరిపూర్ణతను ఆస్వాదించండి.",
-        phonePlaceholder: "10-అంకెల మొబైల్ నంబర్‌ను నమోదు చేయండి",
-        btnUnlock: "🎁 బహుమతిని తెరవండి",
-        spinTitle: "స్పిన్ చేయండి",
-        previewTitle: "ఈ 8 లో ఒకటి మీ సొంతం:",
-        spinDesc: "మీ ఉచిత బహుమతిని పొందేందుకు కింద ఉన్న బటన్‌ను నొక్కండి.",
+        welcomeTitle: "బెంగుళూరు జ్యూసీకి స్వాగతం!",
+        welcomeDesc: "ఖమ్మంలో మమ్మల్ని ఎంచుకున్నందుకు ధన్యవాదాలు. ఈరోజు మీ ఉచిత సర్ప్రైజ్ స్వీట్ కోసం మీ నంబర్‌ను నమోదు చేయండి!",
+        phonePlaceholder: "10-అంకెల నంబర్‌ను నమోదు చేయండి",
+        btnUnlock: "🎁 ఉచిత బహుమతి పొందండి",
+        surveyTitle: "చిన్న ప్రశ్న!",
+        surveyDesc: "స్పిన్ చేయడానికి ముందు ఈ రెండు ప్రశ్నలకు సమాధానం ఇవ్వండి.",
+        survQ1: "మీకు ఇక్కడ ఇష్టమైన ఐటమ్ ఏది?",
+        opt1: "ఐస్ క్రీమ్స్ & షేక్స్", opt2: "కేక్స్ & పేస్ట్రీస్", opt3: "బ్రౌనీస్", opt4: "స్నాక్స్ & ఫాస్ట్ ఫుడ్",
+        survQ2: "మీరు ఎంత తరచుగా వస్తుంటారు?",
+        freq1: "మొదటిసారి వచ్చాను", freq2: "వారానికోసారి", freq3: "నెలకోసారి", freq4: "అరుదుగా",
+        btnNext: "తర్వాత: స్పిన్ & విన్ ➔",
+        spinTitle: "స్పిన్ చేసి గెలవండి",
+        previewTitle: "ఈ 8 లో ఒకటి మీదే:",
+        spinDesc: "మీ ఉచిత బహుమతిని చూసేందుకు బటన్‌ను నొక్కండి!",
         btnSpin: "ఇప్పుడే స్పిన్ చేయండి",
         wonSubtitle: "మీరు గెలుచుకున్నారు",
-        claimText: "దీన్ని కౌంటర్ వద్ద చూపించి మీ స్వీట్ తీసుకోండి!",
+        claimText: "కౌంటర్ వద్ద ఇది చూపించి మీ స్వీట్ తీసుకోండి!",
         feedbackTitle: "రుచి ఎలా ఉంది?",
         rate5: "⭐⭐⭐⭐⭐ - అద్భుతం!",
         rate4: "⭐⭐⭐⭐ - చాలా బాగుంది",
@@ -414,39 +447,46 @@
         feedbackPlaceholder: "మీ అభిప్రాయం...",
         btnSubmit: "అభిప్రాయాన్ని పంపండి",
         thanksTitle: "ధన్యవాదాలు!",
-        thanksDesc: "మీ అభిప్రాయం మా వంటకాలను మెరుగుపరచడంలో సహాయపడుతుంది.",
-        googleDesc: "5-స్టార్ గూగుల్ రివ్యూతో మమ్మల్ని ప్రోత్సహించండి!",
+        thanksDesc: "మీ అభిప్రాయం సేవ్ చేయబడింది.",
+        googleDesc: "5-స్టార్ గూగుల్ రివ్యూతో మమ్మల్ని సపోర్ట్ చేయండి!",
         btnGoogle: "రివ్యూ కాపీ చేసి గూగుల్ ఓపెన్ చేయండి",
         errPhone: "దయచేసి సరైన 10-అంకెల నంబర్‌ను నమోదు చేయండి.",
-        errClaimed: "ఈ నంబర్ ఇప్పటికే ఒక బహుమతిని పొందింది! ఒక్కరికి ఒకటే బహుమతి.",
-        errNetwork: "నెట్‌వర్క్ లోపం. మీ ఇంటర్నెట్ కనెక్షన్‌ను తనిఖీ చేయండి.",
-        clipboardMsg: "అద్భుతమైన 5-స్టార్ రివ్యూ కాపీ చేయబడింది!\n\nమమ్మల్ని ప్రోత్సహించడానికి గూగుల్ రివ్యూస్ పేజీలో పేస్ట్ చేయండి."
+        errClaimed: "ఈ నంబర్ ఇప్పటికే బహుమతిని పొందింది! ఒక్కరికి ఒకటే బహుమతి.",
+        errNetwork: "నెట్‌వర్క్ లోపం. మీ ఇంటర్నెట్ తనిఖీ చేయండి.",
+        clipboardMsg: "5-స్టార్ రివ్యూ కాపీ చేయబడింది!\n\nగూగుల్ రివ్యూస్ పేజీలో పేస్ట్ చేయండి."
       },
       hi: {
-        welcomeTitle: "उत्कृष्टता का स्वाद",
-        welcomeDesc: "बैंगलोर जूसी एंड फूड्स में, हम स्वाद की कला में विश्वास करते हैं। हम आपको एक मानार्थ प्रीमियम ट्रीट के साथ हमारे पाक कौशल का अनुभव करने के लिए आमंत्रित करते हैं।",
+        welcomeTitle: "बैंगलोर जूसी में आपका स्वागत है!",
+        welcomeDesc: "खम्मम में हमें चुनने के लिए धन्यवाद। आज ही अपना मुफ्त उपहार पाने के लिए अपना नंबर दर्ज करें!",
         phonePlaceholder: "10-अंकों का मोबाइल नंबर दर्ज करें",
-        btnUnlock: "🎁 उपहार अनलॉक करें",
+        btnUnlock: "🎁 अपना मुफ्त उपहार पाएं",
+        surveyTitle: "एक छोटा सवाल!",
+        surveyDesc: "स्पिन करने से पहले दो आसान सवालों का जवाब दें।",
+        survQ1: "यहाँ आपका पसंदीदा आइटम क्या है?",
+        opt1: "आइसक्रीम और शेक्स", opt2: "केक और पेस्ट्री", opt3: "ब्राउनीज़", opt4: "स्नैक्स और फास्ट फूड",
+        survQ2: "आप कितनी बार आते हैं?",
+        freq1: "पहली बार", freq2: "हफ्ते में एक बार", freq3: "महीने में एक बार", freq4: "शायद ही कभी",
+        btnNext: "अगला: स्पिन और जीतें ➔",
         spinTitle: "स्पिन और जीतें",
         previewTitle: "इन 8 में से 1 आपका होगा:",
-        spinDesc: "अपना मुफ्त उपहार खोजने के लिए नीचे दिए गए बटन पर टैप करें।",
+        spinDesc: "अपना उपहार देखने के लिए नीचे बटन दबाएं!",
         btnSpin: "अभी स्पिन करें",
         wonSubtitle: "आपने जीता है",
-        claimText: "इसे काउंटर पर दिखाएं और अपना उपहार लें!",
+        claimText: "काउंटर पर इसे दिखाएं और अपना उपहार लें!",
         feedbackTitle: "स्वाद कैसा था?",
-        rate5: "⭐⭐⭐⭐⭐ - उत्कृष्ट!",
+        rate5: "⭐⭐⭐⭐⭐ - बहुत बढ़िया!",
         rate4: "⭐⭐⭐⭐ - बहुत अच्छा",
-        rate3: "⭐⭐⭐ - ठीक है",
-        feedbackPlaceholder: "आपकी प्रतिक्रिया...",
-        btnSubmit: "प्रतिक्रिया सबमिट करें",
+        rate3: "⭐⭐⭐ - ठीक था",
+        feedbackPlaceholder: "आपकी राय...",
+        btnSubmit: "राय सबमिट करें",
         thanksTitle: "धन्यवाद!",
-        thanksDesc: "आपकी प्रतिक्रिया हमें और बेहतर बनाने में मदद करती है।",
-        googleDesc: "5-स्टार गूगल रिव्यू के साथ हमारा समर्थन करें!",
+        thanksDesc: "आपकी राय सेव हो गई है।",
+        googleDesc: "5-स्टार गूगल रिव्यू के साथ हमारा सपोर्ट करें!",
         btnGoogle: "रिव्यू कॉपी करें और गूगल खोलें",
-        errPhone: "कृपया एक वैध 10-अंकों का मोबाइल नंबर दर्ज करें।",
-        errClaimed: "इस नंबर ने पहले ही उपहार का दावा किया है! प्रति ग्राहक एक उपहार।",
-        errNetwork: "नेटवर्क त्रुटि। कृपया अपने इंटरनेट कनेक्शन की जांच करें।",
-        clipboardMsg: "एक शानदार 5-स्टार रिव्यू कॉपी हो गया है!\n\nहमें सपोर्ट करने के लिए Google Reviews पेज पर पेस्ट करें।"
+        errPhone: "कृपया सही 10-अंकों का मोबाइल नंबर दर्ज करें।",
+        errClaimed: "इस नंबर से पहले ही उपहार लिया जा चुका है! एक ग्राहक के लिए एक उपहार।",
+        errNetwork: "नेटवर्क त्रुटि। कृपया अपना इंटरनेट जांचें।",
+        clipboardMsg: "5-स्टार रिव्यू कॉपी हो गया है!\n\nहमें सपोर्ट करने के लिए Google Reviews पेज पर पेस्ट करें।"
       }
     };
 
@@ -459,6 +499,20 @@
       document.getElementById('phone').placeholder = dict.phonePlaceholder;
       document.getElementById('t-btn-unlock').innerText = dict.btnUnlock;
       
+      document.getElementById('t-survey-title').innerText = dict.surveyTitle;
+      document.getElementById('t-survey-desc').innerText = dict.surveyDesc;
+      document.getElementById('t-surv-q1').innerText = dict.survQ1;
+      document.getElementById('t-opt-1').innerText = dict.opt1;
+      document.getElementById('t-opt-2').innerText = dict.opt2;
+      document.getElementById('t-opt-3').innerText = dict.opt3;
+      document.getElementById('t-opt-4').innerText = dict.opt4;
+      document.getElementById('t-surv-q2').innerText = dict.survQ2;
+      document.getElementById('t-freq-1').innerText = dict.freq1;
+      document.getElementById('t-freq-2').innerText = dict.freq2;
+      document.getElementById('t-freq-3').innerText = dict.freq3;
+      document.getElementById('t-freq-4').innerText = dict.freq4;
+      document.getElementById('t-btn-next').innerText = dict.btnNext;
+
       document.getElementById('t-spin-title').innerText = dict.spinTitle;
       document.getElementById('t-preview-title').innerText = dict.previewTitle;
       document.getElementById('t-spin-desc').innerText = dict.spinDesc;
@@ -528,7 +582,7 @@
       }
 
       const btn = document.getElementById('t-btn-unlock');
-      btn.innerText = "⏳ Verifying...";
+      btn.innerText = "⏳ Checking...";
       btn.disabled = true;
 
       try {
@@ -541,15 +595,26 @@
           btn.innerText = i18n[lang].btnUnlock;
           btn.disabled = false;
         } else {
-          // Fetch products for the spinner while transitioning
-          await loadProductsForSpinner();
-          showScreen('screen-spin');
+          showScreen('screen-survey'); // Go to New Survey Screen
         }
       } catch(e) {
         alert(i18n[lang].errNetwork);
         btn.innerText = i18n[lang].btnUnlock;
         btn.disabled = false;
       }
+    }
+
+    // --- STEP 1.5: Survey Submit ---
+    async function submitSurvey() {
+      userSurveyPref = document.getElementById('survey-pref').value;
+      userSurveyFreq = document.getElementById('survey-freq').value;
+      
+      const btn = document.getElementById('t-btn-next');
+      btn.innerText = "⏳ Loading Rewards...";
+      btn.disabled = true;
+
+      await loadProductsForSpinner();
+      showScreen('screen-spin');
     }
 
     // --- STEP 2: Spinner Engine & Preview ---
@@ -580,10 +645,8 @@
       // Ensure we have exactly 8 items for the preview
       let eightItemsForPreview = [];
       if (availableItems.length >= 8) {
-        // Take the first 8 available from DB
         eightItemsForPreview = availableItems.slice(0, 8);
       } else if (availableItems.length > 0) {
-        // Mix DB items with fallback items to make exactly 8
         eightItemsForPreview = [...availableItems];
         let i = 0;
         while(eightItemsForPreview.length < 8) {
@@ -591,9 +654,7 @@
           i++;
         }
       } else {
-        // Just use the 8 fallbacks
         eightItemsForPreview = fallbackItems;
-        availableItems = fallbackItems; // set availableItems to fallbacks so the spin works
       }
 
       // 1. Populate the Preview Grid
@@ -607,12 +668,10 @@
       });
 
       // 2. Populate the Spin Track 
-      // Ensure we only spin through the 8 items shown in the preview to be fair/accurate
       const itemsToSpin = eightItemsForPreview; 
-
       const track = document.getElementById('slot-track');
       track.innerHTML = ""; 
-      // Duplicate array to make a long spinning strip
+      
       const spinStrip = [...itemsToSpin, ...itemsToSpin, ...itemsToSpin, ...itemsToSpin, ...itemsToSpin];
       
       spinStrip.forEach(item => {
@@ -622,8 +681,6 @@
         track.appendChild(div);
       });
 
-      // Update the global available items to strictly match the 8 preview items
-      // so the randomizer picks from these 8.
       availableItems = itemsToSpin;
     }
 
@@ -634,26 +691,21 @@
 
       const track = document.getElementById('slot-track');
       
-      // Calculate random stop index (in the 3rd or 4th set of duplicates)
-      const baseLen = availableItems.length; // Will be exactly 8 now
+      const baseLen = availableItems.length;
       const targetIndex = (baseLen * 3) + Math.floor(Math.random() * baseLen);
       
-      // Assign the winning item
       assignedItem = availableItems[targetIndex % baseLen];
 
-      // Calculate translation (each item is 100% width of the container)
       const translateX = -(targetIndex * 100);
       track.style.transform = `translateX(${translateX}%)`;
 
-      // Wait for animation to finish (4s), then lock in DB and show reward
       setTimeout(async () => {
         try {
-          // Lock number instantly
           await fetch(`${FIREBASE_URL}/claimed/${userPhone}.json`, { method: 'PUT', body: JSON.stringify(true) });
-          saveState('feedback'); // State saved, refresh is safe now
+          saveState('feedback');
           showRewardScreen();
         } catch(e) {
-          alert("Network Error saving claim, but treat is yours!");
+          alert("Network Error saving claim, but the treat is yours!");
           saveState('feedback');
           showRewardScreen();
         }
@@ -671,7 +723,7 @@
       imgElement.style.display = "block";
     }
 
-    // --- STEP 3: Feedback ---
+    // --- STEP 3: Feedback (Now Includes Survey Data) ---
     function submitFeedback() {
       const rating = document.getElementById('rating').value;
       const feedback = document.getElementById('feedback').value;
@@ -680,13 +732,21 @@
       btn.innerText = "Saving...";
       btn.disabled = true;
 
+      // Passing extra Survey details inside the feedback parameter string for Apps Script flexibility
+      const combinedFeedback = `[Fav: ${userSurveyPref}, Freq: ${userSurveyFreq}] - ${feedback}`;
+
       fetch(GOOGLE_SHEETS_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: userPhone, product: assignedItem.name, rating: rating, feedback: feedback })
+        body: JSON.stringify({ 
+          phone: userPhone, 
+          product: assignedItem.name, 
+          rating: rating, 
+          feedback: combinedFeedback
+        })
       }).then(() => {
-        saveState('done'); // Update state
+        saveState('done');
         showScreen('screen-done');
       }).catch(() => {
         saveState('done');
@@ -698,17 +758,17 @@
     function autoCopyReview() {
       const lang = document.getElementById('language').value;
       const prefixes = [
-        "Absolutely loved the desserts at Bangalore Juicy Fruits! ", 
+        "Absolutely loved the items at Bangalore Juicy & Foods! ", 
         "Amazing quality and super fresh treats. ", 
-        "The hygiene and taste here are top-notch. ", 
-        "My new favorite spot for brownies and cheesecakes in Khammam. ", 
-        "Delicious, rich flavors with perfect texture. ", 
-        "Highly recommend this place for dessert lovers! ", 
+        "The hygiene and taste here in Khammam are top-notch. ", 
+        "My favorite spot for quick bites and desserts. ", 
+        "Delicious flavors with perfect texture. ", 
+        "Highly recommend this place to everyone! ", 
         "Fantastic service and the freshest items. ", 
-        "A must-visit cafe! The quality is unmatched. "
+        "A must-visit cafe in Khammam! Quality is unmatched. "
       ];
       const suffixes = [
-        "Will definitely come back.", 
+        "Will definitely come back again.", 
         "Highly recommended to everyone.", 
         "5 stars from me!", 
         "Keep up the great work.", 
