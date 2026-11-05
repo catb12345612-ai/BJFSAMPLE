@@ -6,24 +6,25 @@
   <title>BJF Premium Surprise Treat</title>
   
   <!-- Premium Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   
   <style>
     :root {
       --gold: #D4AF37;
       --gold-light: #F9E596;
-      --gold-dark: #AA8C2C;
+      --gold-dark: #997A15;
       --bg-light: #ffffff;
-      --bg-gradient: linear-gradient(135deg, #ffffff 0%, #fcf8ee 100%);
-      --card-bg: rgba(255, 255, 255, 0.95);
-      --card-border: rgba(212, 175, 55, 0.3);
+      --bg-gradient: linear-gradient(135deg, #fffdf9 0%, #fcf4e0 100%);
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --card-border: rgba(212, 175, 55, 0.35);
       --text-dark: #1a1a1a;
-      --text-muted: #6b6b6b;
-      --success: #28a745;
+      --text-muted: #666666;
+      --success: #1faa4f;
+      --danger: #d93829;
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     
     body { 
       background: var(--bg-gradient); 
@@ -34,14 +35,52 @@
       flex-direction: column; 
       min-height: 100vh; 
       text-align: center; 
-      overflow: hidden; /* Only the container scrolls */
+      overflow-x: hidden;
     }
 
-    h1, h2, h3 { font-family: 'Playfair Display', serif; color: var(--gold-dark); margin-top: 0; letter-spacing: 0.5px; }
+    h1, h2, h3 { font-family: 'Playfair Display', serif; color: var(--gold-dark); margin-top: 0; letter-spacing: 0.4px; }
+
+    /* --- CUSTOM TOAST NOTIFICATION --- */
+    .toast-container {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 92%;
+      max-width: 400px;
+      pointer-events: none;
+    }
+    .custom-toast {
+      background: rgba(20, 20, 28, 0.96);
+      color: #fff;
+      border-left: 4px solid var(--gold);
+      padding: 13px 16px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      animation: slideDownToast 0.3s ease forwards;
+      pointer-events: auto;
+      text-align: left;
+    }
+    .custom-toast.toast-error { border-left-color: #ff4d4f; }
+    .custom-toast.toast-success { border-left-color: #2ecc71; }
+    @keyframes slideDownToast {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
     /* --- FALLING DESSERTS BACKGROUND --- */
     .bg-animations {
-      position: absolute;
+      position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
       overflow: hidden;
       z-index: -1;
@@ -49,14 +88,14 @@
     }
     .glass-dessert {
       position: absolute;
-      width: 75px; height: 75px;
-      background: rgba(255, 255, 255, 0.5);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      width: 68px; height: 68px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(212, 175, 55, 0.25);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       border-radius: 20px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 40px;
+      font-size: 34px;
       box-shadow: 0 8px 30px 0 rgba(212, 175, 55, 0.15);
       animation: floatUp 20s infinite linear;
       opacity: 0.8;
@@ -68,93 +107,159 @@
       100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
     }
 
-    /* --- HEADER / LANGUAGE SELECTOR --- */
-    .header {
-      position: fixed; top: 15px; right: 15px; z-index: 10;
+    /* --- HEADER / LANGUAGE & SOUND CONTROLS --- */
+    .header-controls {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .lang-select {
-      background: rgba(255, 255, 255, 0.9);
+    .lang-select, .sound-btn {
+      background: rgba(255, 255, 255, 0.92);
       border: 1px solid var(--gold);
       color: var(--gold-dark);
-      padding: 8px 15px;
+      padding: 7px 13px;
       border-radius: 20px;
       font-weight: 600;
+      font-size: 12.5px;
       font-family: 'Poppins', sans-serif;
       box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
       outline: none;
       cursor: pointer;
       backdrop-filter: blur(5px);
+      width: auto;
+      margin: 0;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .sound-btn {
+      padding: 7px 11px;
+      font-size: 14px;
+    }
+
+    /* --- STEP PROGRESS BAR --- */
+    .step-progress-wrap {
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto 14px auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6px;
+    }
+    .step-dot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      position: relative;
+      z-index: 2;
+    }
+    .step-dot-circle {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: #eee;
+      border: 2px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 11px;
+      color: #777;
+      transition: all 0.3s ease;
+    }
+    .step-dot.active .step-dot-circle {
+      background: var(--gold);
+      border-color: var(--gold-dark);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+    }
+    .step-dot.completed .step-dot-circle {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: rgba(212, 175, 55, 0.25);
+      margin: 0 6px 14px 6px;
     }
 
     /* --- SCREENS & CARDS --- */
     .screen-container {
       width: 100%; 
-      height: 100vh;
-      overflow-y: auto;
+      min-height: 100vh;
       display: flex; 
       flex-direction: column;
-      padding: 60px 20px 40px 20px; /* Padding for header and scroll */
+      padding: 62px 16px 45px 16px;
     }
     
     .screen { 
       display: none; 
       width: 100%; 
-      max-width: 440px; 
-      margin: auto; /* Centers vertically if small, scrolls if big */
-      animation: fadeIn 0.6s ease-out; 
+      max-width: 460px; 
+      margin: 0 auto;
+      animation: fadeIn 0.45s ease-out; 
     }
-    .active { display: block; }
+    .screen.active { display: block; }
 
     .card-glass { 
       background: var(--card-bg); 
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      padding: 35px 25px; 
-      border-radius: 25px; 
-      box-shadow: 0 15px 40px rgba(212, 175, 55, 0.12), inset 0 0 0 1px var(--card-border); 
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 30px 22px; 
+      border-radius: 26px; 
+      box-shadow: 0 16px 45px rgba(212, 175, 55, 0.14), inset 0 0 0 1px var(--card-border); 
     }
 
     .restaurant-logo { 
-      width: 95px; height: 95px; 
+      width: 92px; height: 92px; 
       border-radius: 50%; 
-      box-shadow: 0px 8px 25px rgba(212, 175, 55, 0.25); 
-      margin-bottom: 20px; 
+      box-shadow: 0px 8px 25px rgba(212, 175, 55, 0.3); 
+      margin-bottom: 14px; 
       border: 3px solid var(--gold); 
       object-fit: cover; 
       background-color: #fff; 
     }
 
-    .lux-text { color: var(--text-muted); font-size: 14.5px; line-height: 1.6; margin-bottom: 20px; font-weight: 400; }
+    .lux-text { color: var(--text-muted); font-size: 14px; line-height: 1.55; margin-bottom: 18px; font-weight: 400; }
     
     input, select, textarea { 
-      width: 100%; margin: 10px 0 20px; padding: 15px; 
+      width: 100%; margin: 8px 0 16px; padding: 14px 15px; 
       border-radius: 12px; 
-      border: 1px solid rgba(0, 0, 0, 0.1); 
+      border: 1px solid rgba(0, 0, 0, 0.12); 
       background: #fafafa; 
-      color: var(--text-dark); font-size: 15px; 
+      color: var(--text-dark); font-size: 14.5px; 
       font-family: 'Poppins', sans-serif;
-      outline: none; transition: 0.3s; 
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
+      outline: none; transition: 0.25s; 
     }
     input:focus, select:focus, textarea:focus { 
       border: 1px solid var(--gold);
       background: #fff;
-      box-shadow: 0 0 12px rgba(212, 175, 55, 0.2); 
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.22); 
     }
 
     button { 
-      width: 100%; padding: 16px; border: none; border-radius: 12px; 
-      font-weight: 600; font-size: 15px; cursor: pointer; 
+      width: 100%; padding: 15px; border: none; border-radius: 13px; 
+      font-weight: 600; font-size: 14.5px; cursor: pointer; 
       font-family: 'Poppins', sans-serif;
-      transition: all 0.3s; text-transform: uppercase; letter-spacing: 1.5px;
+      transition: all 0.25s; text-transform: uppercase; letter-spacing: 1px;
     }
     button:active { transform: scale(0.97); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .btn-gold { 
-      background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark)); 
+      background: linear-gradient(135deg, #e5c158, var(--gold), var(--gold-dark)); 
       color: #fff; 
-      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-      box-shadow: 0 8px 25px rgba(212, 175, 55, 0.35);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      box-shadow: 0 8px 22px rgba(212, 175, 55, 0.35);
     }
     .btn-green { 
       background: linear-gradient(135deg, #40d06a, #1faa4f); 
@@ -162,141 +267,408 @@
     }
     .btn-google { 
       background: linear-gradient(135deg, #4285F4, #0d47a1); 
-      color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px; 
+      color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 12px; 
     }
     .btn-outline {
       background: transparent;
       border: 2px solid var(--gold);
       color: var(--gold-dark);
-      margin-top: 25px;
+      margin-top: 18px;
+    }
+
+    /* --- SOCIAL PROOF TICKER --- */
+    .live-Counter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      color: var(--gold-dark);
+      padding: 5px 13px;
+      border-radius: 30px;
+      font-size: 11.5px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .pulse-dot {
+      width: 8px; height: 8px;
+      background: #28a745;
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulseDot 1.5s infinite;
+    }
+    @keyframes pulseDot {
+      0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.6); }
+      70% { box-shadow: 0 0 0 7px rgba(40, 167, 69, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
     }
 
     /* --- SURVEY UI --- */
-    .survey-group {
-      text-align: left;
-      margin-bottom: 15px;
-    }
+    .survey-group { text-align: left; margin-bottom: 12px; }
     .survey-group label {
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--gold-dark);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       display: block;
     }
 
-    /* --- GRAND LANDSCAPE SHOWCASE (NEW) --- */
+    /* --- COMPACT 2-COLUMN SHOWCASE GRID --- */
     .grand-showcase {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin-bottom: 35px;
-      margin-top: 15px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 22px;
+      margin-top: 10px;
     }
     .showcase-card {
       position: relative;
       width: 100%;
-      height: 170px;
-      border-radius: 16px;
+      height: 118px;
+      border-radius: 14px;
       overflow: hidden;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-      border: 2px solid var(--gold-light);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+      border: 1.5px solid var(--gold-light);
+      background: #f5f0e6;
     }
     .showcase-card img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.5s ease;
+      transition: transform 0.4s ease;
     }
-    .showcase-card:hover img {
-      transform: scale(1.05);
-    }
+    .showcase-card:hover img { transform: scale(1.06); }
     .showcase-card-overlay {
       position: absolute;
       bottom: 0; left: 0; right: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
-      padding: 20px 15px 15px 15px;
+      background: linear-gradient(to top, rgba(0,0,0,0.88) 10%, transparent);
+      padding: 16px 8px 7px 8px;
       text-align: left;
     }
     .showcase-card-overlay h3 {
       margin: 0;
       color: #fff;
-      font-family: 'Playfair Display', serif;
-      font-size: 18px;
-      letter-spacing: 1px;
-      text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .showcase-badge {
+      position: absolute;
+      top: 6px; right: 6px;
+      background: rgba(0,0,0,0.65);
+      color: var(--gold-light);
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(212,175,55,0.4);
     }
 
-    /* --- IMPROVED SLIDER / SPINNER UI --- */
+    /* --- ARCADE GAME SELECTOR TABS --- */
+    .arcade-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin: 12px 0 18px 0;
+      background: #f6f1e3;
+      padding: 6px;
+      border-radius: 16px;
+      border: 1px solid rgba(212,175,55,0.3);
+    }
+    .arcade-tab {
+      padding: 10px 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .arcade-tab span.icon { font-size: 20px; }
+    .arcade-tab.active {
+      background: #fff;
+      color: var(--gold-dark);
+      box-shadow: 0 4px 12px rgba(212,175,55,0.25);
+      border: 1px solid var(--gold);
+    }
+
+    .game-arena { display: none; margin-top: 8px; }
+    .game-arena.active { display: block; animation: fadeIn 0.3s ease; }
+
+    /* --- GAME 1: IMPROVED SLIDER / SPINNER UI --- */
     .slot-machine-container {
-      width: 100%; height: 180px; position: relative;
+      width: 100%; height: 175px; position: relative;
       background: #fff; border-radius: 20px;
-      border: 2px solid var(--gold); overflow: hidden; margin-bottom: 25px;
-      box-shadow: inset 0 0 15px rgba(0,0,0,0.05), 0 8px 30px rgba(212, 175, 55, 0.25);
+      border: 2px solid var(--gold); overflow: hidden; margin-bottom: 18px;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.05), 0 8px 30px rgba(212, 175, 55, 0.22);
     }
     .slot-track {
       display: flex; flex-direction: row; height: 100%; align-items: center;
-      transition: transform 4s cubic-bezier(0.1, 0.9, 0.2, 1);
+      transition: transform 4s cubic-bezier(0.12, 0.85, 0.2, 1);
+      will-change: transform;
     }
     .slot-item {
-      min-width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px;
+      min-width: 100%; width: 100%; flex-shrink: 0; height: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px;
     }
     .slot-item img {
-      width: 90px; height: 90px; object-fit: cover; border-radius: 50%;
-      border: 3px solid var(--gold); margin-bottom: 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+      width: 86px; height: 86px; object-fit: cover; border-radius: 50%;
+      border: 3px solid var(--gold); margin-bottom: 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.14);
     }
     .slot-item p {
-      margin: 0; font-weight: 600; color: var(--text-dark); font-size: 16px;
+      margin: 0; font-weight: 600; color: var(--text-dark); font-size: 15px;
     }
-    
-    /* PREMIUM SELECTION FRAME */
     .slot-selector {
       position: absolute; 
-      top: 50%; 
-      left: 50%; 
+      top: 50%; left: 50%; 
       transform: translate(-50%, -50%);
-      width: 120px; 
-      height: 160px; 
+      width: 145px; height: 155px; 
       border: 3px solid var(--gold); 
       border-radius: 16px;
       z-index: 2;
-      background: rgba(212, 175, 55, 0.05); 
-      box-shadow: 0 0 20px rgba(212, 175, 55, 0.4), inset 0 0 15px rgba(212, 175, 55, 0.2);
+      background: rgba(212, 175, 55, 0.04); 
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.35), inset 0 0 15px rgba(212, 175, 55, 0.15);
       pointer-events: none; 
     }
 
-    .product-img { 
-      width: 100%; height: 220px; object-fit: cover; border-radius: 18px; margin: 15px 0; 
-      box-shadow: 0px 12px 30px rgba(0,0,0,0.15); border: 2px solid var(--gold-light); 
+    /* --- GAME 2: STONE PAPER SCISSORS DUEL --- */
+    .rps-arena-box {
+      background: linear-gradient(145deg, #fffdf7, #f9f0d8);
+      border: 2px solid var(--gold);
+      border-radius: 20px;
+      padding: 18px 14px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 25px rgba(212, 175, 55, 0.18);
+    }
+    .rps-scoreboard {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .rps-fighter {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .rps-hand-circle {
+      width: 78px; height: 78px;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+    .rps-hand-circle.shake {
+      animation: rpsShake 0.45s infinite;
+    }
+    @keyframes rpsShake {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(-12deg); }
+    }
+    .rps-vs {
+      font-family: 'Playfair Display', serif;
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--gold-dark);
+      background: rgba(212,175,55,0.2);
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .rps-status-msg {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--gold-dark);
+      min-height: 22px;
+      margin: 8px 0 12px 0;
+    }
+    .rps-choices {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .rps-choice-btn {
+      background: #fff;
+      border: 2px solid var(--gold);
+      border-radius: 14px;
+      padding: 12px 6px;
+      color: var(--text-dark);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 4px 12px rgba(212,175,55,0.2);
+      text-transform: none;
+    }
+    .rps-choice-btn span.emoji { font-size: 28px; }
+    .rps-choice-btn:hover { background: var(--gold-light); }
+
+    /* --- GAME 3: GOLDEN MYSTERY SCRATCH CARD --- */
+    .scratch-box-wrap {
+      position: relative;
+      width: 100%;
+      height: 190px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid var(--gold);
+      margin-bottom: 16px;
+      background: #fff;
+      box-shadow: 0 8px 25px rgba(212, 175, 55, 0.22);
+      user-select: none;
+    }
+    .scratch-prize-underneath {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      background: radial-gradient(circle, #fffdf7 0%, #f7e9c4 100%);
+    }
+    .scratch-prize-underneath img {
+      width: 84px; height: 84px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--gold);
+      margin-bottom: 8px;
+    }
+    .scratch-prize-underneath h4 {
+      margin: 0;
+      font-size: 16px;
+      color: var(--text-dark);
+      font-weight: 700;
+    }
+    #scratch-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      cursor: grab;
+      touch-action: none;
     }
 
-    .dev-footer { margin-top: 35px; opacity: 0.8; transition: 0.3s; text-align: center; }
+    /* --- REWARD VOUCHER & LIVE ANTI-SCREENSHOT BADGE --- */
+    .voucher-ticket {
+      background: linear-gradient(135deg, #fffdf7 0%, #fdf5df 100%);
+      border: 2px dashed var(--gold);
+      border-radius: 18px;
+      padding: 16px;
+      margin: 12px 0;
+      position: relative;
+      box-shadow: 0 8px 24px rgba(212,175,55,0.18);
+    }
+    .live-verified-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #111;
+      color: var(--gold-light);
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      margin-bottom: 10px;
+    }
+    .voucher-code-pill {
+      display: inline-block;
+      background: rgba(212, 175, 55, 0.2);
+      border: 1px solid var(--gold-dark);
+      color: #111;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 4px 12px;
+      border-radius: 8px;
+      letter-spacing: 1.5px;
+      margin-top: 6px;
+    }
+    .product-img { 
+      width: 100%; height: 195px; object-fit: cover; border-radius: 16px; margin: 10px 0; 
+      box-shadow: 0px 10px 25px rgba(0,0,0,0.15); border: 2px solid var(--gold); 
+    }
+
+    /* --- INTERACTIVE STAR RATING --- */
+    .star-picker {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 10px 0 14px 0;
+    }
+    .star-btn {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      border: 1px solid rgba(212,175,55,0.4);
+      background: #fff;
+      font-size: 22px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .star-btn.selected {
+      background: var(--gold-light);
+      border-color: var(--gold-dark);
+      transform: scale(1.08);
+    }
+
+    /* --- DEVELOPER FOOTER --- */
+    .dev-footer { margin-top: 28px; opacity: 0.9; transition: 0.3s; text-align: center; }
     .dev-footer:hover { opacity: 1; transform: scale(1.02); }
     .dev-logo { width: 45px; height: 45px; border-radius: 50%; box-shadow: 0px 4px 12px rgba(0,0,0,0.15); object-fit: cover; }
 
-    @keyframes fadeIn { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { 0% { opacity: 0; transform: translateY(12px); } 100% { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
 
-  <!-- Audio SFX -->
+  <!-- Toast Notification Area -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Audio SFX (Strictly Unchanged URLs) -->
   <audio id="sfx-win" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" preload="auto"></audio>
   <audio id="sfx-error" src="https://assets.mixkit.co/active_storage/sfx/2954/2954-preview.mp3" preload="auto"></audio>
   <audio id="sfx-spin" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3" preload="auto"></audio>
 
   <!-- Premium Background Animation (Falling Desserts) -->
   <div class="bg-animations">
-    <div class="glass-dessert" style="left: 10%; animation-duration: 18s; animation-delay: 0s;">🍰</div>
-    <div class="glass-dessert" style="left: 30%; animation-duration: 22s; animation-delay: -5s;">🥤</div>
-    <div class="glass-dessert" style="left: 50%; animation-duration: 20s; animation-delay: -2s;">🧁</div>
-    <div class="glass-dessert" style="left: 70%; animation-duration: 25s; animation-delay: -8s;">🍮</div>
-    <div class="glass-dessert" style="left: 85%; animation-duration: 19s; animation-delay: -12s;">🍫</div>
-    <div class="glass-dessert" style="left: 20%; animation-duration: 24s; animation-delay: -15s;">🍩</div>
-    <div class="glass-dessert" style="left: 60%; animation-duration: 21s; animation-delay: -7s;">🍪</div>
+    <div class="glass-dessert" style="left: 8%; animation-duration: 18s; animation-delay: 0s;">🍰</div>
+    <div class="glass-dessert" style="left: 28%; animation-duration: 22s; animation-delay: -5s;">🥤</div>
+    <div class="glass-dessert" style="left: 48%; animation-duration: 20s; animation-delay: -2s;">🧁</div>
+    <div class="glass-dessert" style="left: 68%; animation-duration: 25s; animation-delay: -8s;">🍮</div>
+    <div class="glass-dessert" style="left: 84%; animation-duration: 19s; animation-delay: -12s;">🍫</div>
+    <div class="glass-dessert" style="left: 18%; animation-duration: 24s; animation-delay: -15s;">🍩</div>
+    <div class="glass-dessert" style="left: 58%; animation-duration: 21s; animation-delay: -7s;">🍪</div>
   </div>
 
-  <!-- Language Selector -->
-  <div class="header">
+  <!-- Language & Audio Controls -->
+  <div class="header-controls">
+    <button type="button" class="sound-btn" id="mute-toggle-btn" onclick="toggleAudioMute()" title="Toggle Voice & Sound">🔊</button>
     <select class="lang-select" id="language" onchange="changeLanguage()">
       <option value="en">English</option>
       <option value="te">తెలుగు</option>
@@ -305,22 +677,50 @@
   </div>
 
   <div class="screen-container">
+
+    <!-- Step Progress Bar -->
+    <div class="step-progress-wrap">
+      <div class="step-dot active" id="p-step-1">
+        <div class="step-dot-circle">1</div>
+        <span>Verify</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-dot" id="p-step-2">
+        <div class="step-dot-circle">2</div>
+        <span>Taste</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-dot" id="p-step-3">
+        <div class="step-dot-circle">3</div>
+        <span>Play</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-dot" id="p-step-4">
+        <div class="step-dot-circle">4</div>
+        <span>Claim</span>
+      </div>
+    </div>
     
     <!-- SCREEN 1: Welcome & Phone -->
     <div id="screen-phone" class="screen card-glass active">
-      <img src="bjf_logo_circle.png" class="restaurant-logo" alt="BJF Logo" onerror="this.src='https://ui-avatars.com/api/?name=BJF&background=D4AF37&color=fff&rounded=true'">
+      <div class="live-Counter-pill">
+        <span class="pulse-dot"></span>
+        <span id="live-treat-counter">🔥 42 treats claimed in Khammam today!</span>
+      </div>
+      <br>
+      <img id="main-bjf-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><circle cx='60' cy='60' r='58' fill='%231a1a1a' stroke='%23D4AF37' stroke-width='4'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' fill='%23F9E596' font-family='Playfair Display, serif' font-weight='800' font-size='34'>BJF</text><text x='50%' y='76%' dominant-baseline='middle' text-anchor='middle' fill='%23D4AF37' font-family='Poppins, sans-serif' font-weight='600' font-size='9' letter-spacing='1.5'>KHAMMAM</text></svg>" data-local-logo="bjf_logo_circle.png" class="restaurant-logo" alt="BJF Logo">
       <h2 id="t-welcome-title">Welcome to Bangalore Juicy!</h2>
       <p class="lux-text" id="t-welcome-desc">
-        Thank you for choosing us in Khammam. Enter your mobile number below to claim your free special sweet treat today!
+        Thank you for choosing us in Khammam. Enter your mobile number below to play & claim your free special sweet treat today!
       </p>
-      <input type="number" id="phone" placeholder="Enter 10-digit Mobile Number">
-      <button class="btn-gold" id="t-btn-unlock" onclick="verifyPhone()">🎁 Get My Free Gift</button>
+      <input type="tel" id="phone" maxlength="10" inputmode="numeric" placeholder="Enter 10-digit Mobile Number" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
+      <button type="button" class="btn-gold" id="t-btn-unlock" onclick="verifyPhone()">🎁 Get My Free Gift</button>
     </div>
 
     <!-- SCREEN 1.5: Survey -->
     <div id="screen-survey" class="screen card-glass">
       <h2 id="t-survey-title">Quick Question!</h2>
-      <p class="lux-text" id="t-survey-desc">Help us serve you better by answering two simple questions before you spin.</p>
+      <p class="lux-text" id="t-survey-desc">Help us serve you better by answering two simple questions before you play.</p>
       
       <div class="survey-group">
         <label id="t-surv-q1">What is your favorite item here?</label>
@@ -342,70 +742,167 @@
         </select>
       </div>
 
-      <button class="btn-gold" id="t-btn-next" onclick="submitSurvey()">Next: Spin & Win ➔</button>
+      <button type="button" class="btn-gold" id="t-btn-next" onclick="submitSurvey()">Next: Choose Game & Win ➔</button>
     </div>
 
-    <!-- SCREEN 2: The Grand Showcase & Spinner -->
+    <!-- SCREEN 2: The Grand Showcase & 3-in-1 Arcade (Spin / Stone-Paper-Scissors / Scratch) -->
     <div id="screen-spin" class="screen card-glass">
       <h2 id="t-spin-title">Today's Premium Treats</h2>
-      <p class="lux-text" id="t-spin-desc" style="font-size: 13px;">Scroll down to view our luxurious selection, then spin at the bottom to claim yours!</p>
+      <p class="lux-text" id="t-spin-desc" style="font-size: 12.5px; margin-bottom: 10px;">
+        Explore today's fresh treats in stock below, then pick your favorite game to win yours!
+      </p>
       
-      <!-- NEW: Large Landscape Image Showcase -->
+      <!-- Compact 2-Column Image Showcase -->
       <div class="grand-showcase" id="grand-showcase">
         <!-- Dynamically populated via JS -->
       </div>
 
-      <h2 id="t-spin-action" style="margin-top: 10px; font-size: 22px;">Spin to Win!</h2>
+      <h2 id="t-spin-action" style="margin-top: 6px; font-size: 20px; margin-bottom: 6px;">Choose How to Win!</h2>
+
+      <!-- 3-Way Interactive Game Mode Selector -->
+      <div class="arcade-selector">
+        <button type="button" class="arcade-tab active" id="mode-btn-spin" onclick="selectGameMode('spin')">
+          <span class="icon">🎰</span>
+          <span>Royal Spin</span>
+        </button>
+        <button type="button" class="arcade-tab" id="mode-btn-rps" onclick="selectGameMode('rps')">
+          <span class="icon">✊✋✌️</span>
+          <span>Chef Duel</span>
+        </button>
+        <button type="button" class="arcade-tab" id="mode-btn-scratch" onclick="selectGameMode('scratch')">
+          <span class="icon">🪙</span>
+          <span>Scratch Card</span>
+        </button>
+      </div>
       
-      <!-- Improved Spinner Container -->
-      <div class="slot-machine-container">
-        <div class="slot-selector"></div>
-        <div class="slot-track" id="slot-track">
-          <!-- Dynamically populated via JS -->
+      <!-- ARENA 1: Royal Slot Spinner -->
+      <div class="game-arena active" id="arena-spin">
+        <div class="slot-machine-container" id="slot-container">
+          <div class="slot-selector"></div>
+          <div class="slot-track" id="slot-track">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+        <button type="button" class="btn-gold" id="t-btn-spin" onclick="startSpin()">🎰 Spin Now</button>
+      </div>
+
+      <!-- ARENA 2: Stone-Paper-Scissors Chef Duel -->
+      <div class="game-arena" id="arena-rps">
+        <div class="rps-arena-box">
+          <p style="margin:0 0 10px 0; font-size:12px; color:var(--text-muted); font-weight:600;">
+            Beat the BJF Master Chef in Stone-Paper-Scissors to unlock your surprise dessert!
+          </p>
+          <div class="rps-scoreboard">
+            <div class="rps-fighter">
+              <div class="rps-hand-circle" id="rps-user-hand">❔</div>
+              <span style="font-size:11.5px; font-weight:700;">YOU</span>
+            </div>
+            <div class="rps-vs">VS</div>
+            <div class="rps-fighter">
+              <div class="rps-hand-circle" id="rps-chef-hand">👨‍🍳</div>
+              <span style="font-size:11.5px; font-weight:700;">BJF CHEF</span>
+            </div>
+          </div>
+          <div class="rps-status-msg" id="rps-status-msg">Pick your move below!</div>
+          <div class="rps-choices">
+            <button type="button" class="rps-choice-btn" id="rps-btn-rock" onclick="playRPS('rock')">
+              <span class="emoji">✊</span>
+              <span>Stone</span>
+            </button>
+            <button type="button" class="rps-choice-btn" id="rps-btn-paper" onclick="playRPS('paper')">
+              <span class="emoji">✋</span>
+              <span>Paper</span>
+            </button>
+            <button type="button" class="rps-choice-btn" id="rps-btn-scissors" onclick="playRPS('scissors')">
+              <span class="emoji">✌️</span>
+              <span>Scissors</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <button class="btn-gold" id="t-btn-spin" onclick="startSpin()">Spin Now</button>
+      <!-- ARENA 3: Golden Scratch Card -->
+      <div class="game-arena" id="arena-scratch">
+        <p style="margin:0 0 8px 0; font-size:12px; color:var(--text-muted); font-weight:600;">
+          Rub the golden foil card below with your finger or mouse to reveal your treat!
+        </p>
+        <div class="scratch-box-wrap" id="scratch-box-wrap">
+          <div class="scratch-prize-underneath">
+            <img id="scratch-preview-img" src="" alt="Mystery Prize">
+            <h4 id="scratch-preview-name">Mystery Sweet Treat</h4>
+          </div>
+          <canvas id="scratch-canvas"></canvas>
+        </div>
+        <button type="button" class="btn-gold" id="btn-instant-scratch" onclick="instantRevealScratch()">✨ Instant Scratch & Claim</button>
+      </div>
+
     </div>
 
     <!-- SCREEN 3: Reward Reveal & Feedback -->
     <div id="screen-reward" class="screen card-glass">
-      <p style="color:var(--gold-dark); font-size:13px; text-transform:uppercase; letter-spacing:2px; font-weight:800; margin-top:0;" id="t-won-subtitle">You Won A</p>
-      <h2 id="product-name" style="margin:5px 0; color: #111;">Loading...</h2>
-      <img id="product-image" class="product-img" src="" alt="Dessert Treat" style="display: none;">
-      <p style="color:var(--text-muted); font-size: 14.5px; font-weight: 600;" id="t-claim-text">Show this screen at the counter to get your treat!</p>
+      <div class="voucher-ticket">
+        <div class="live-verified-banner">
+          <span class="pulse-dot"></span>
+          <span>LIVE VERIFIED PASS • <span id="live-voucher-clock">--:--:--</span></span>
+        </div>
+        <p style="color:var(--gold-dark); font-size:12px; text-transform:uppercase; letter-spacing:2px; font-weight:800; margin:4px 0;" id="t-won-subtitle">You Won A</p>
+        <h2 id="product-name" style="margin:4px 0; color: #111; font-size: 24px;">Loading...</h2>
+        <div class="voucher-code-pill" id="voucher-code-display">BJF-XXXX</div>
+        <img id="product-image" class="product-img" src="" alt="Dessert Treat" style="display: none;">
+        <p style="color:var(--text-dark); font-size: 13.5px; font-weight: 600; margin: 6px 0 0 0;" id="t-claim-text">
+          Show this live screen at the counter to get your treat!
+        </p>
+      </div>
       
-      <div style="background: #fdfdfd; padding: 20px; border-radius: 18px; margin-top: 25px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 5px 15px rgba(0,0,0,0.04);">
-        <p style="margin-top:0; font-size: 16px; font-weight: 700; color: var(--gold-dark);" id="t-feedback-title">Did you like the taste?</p>
-        <select id="rating">
+      <div style="background: #fdfdfd; padding: 18px; border-radius: 18px; margin-top: 18px; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 5px 15px rgba(0,0,0,0.04);">
+        <p style="margin-top:0; font-size: 15.5px; font-weight: 700; color: var(--gold-dark); margin-bottom: 6px;" id="t-feedback-title">Did you like the taste?</p>
+        
+        <div class="star-picker" id="star-picker">
+          <button type="button" class="star-btn selected" onclick="setStarRating('3')">⭐</button>
+          <button type="button" class="star-btn selected" onclick="setStarRating('3')">⭐</button>
+          <button type="button" class="star-btn selected" onclick="setStarRating('3')">⭐</button>
+          <button type="button" class="star-btn selected" onclick="setStarRating('4')">⭐</button>
+          <button type="button" class="star-btn selected" onclick="setStarRating('5')">⭐</button>
+        </div>
+
+        <select id="rating" onchange="syncStarsFromSelect()">
           <option value="5" id="t-rate-5">⭐⭐⭐⭐⭐ - Superb!</option>
           <option value="4" id="t-rate-4">⭐⭐⭐⭐ - Very Good</option>
           <option value="3" id="t-rate-3">⭐⭐⭐ - It was Okay</option>
         </select>
         <textarea id="feedback" placeholder="Tell us more..." rows="2"></textarea>
-        <button class="btn-green" id="t-btn-submit" onclick="submitFeedback()">Send Feedback</button>
+        <button type="button" class="btn-green" id="t-btn-submit" onclick="submitFeedback()">Send Feedback</button>
       </div>
     </div>
 
     <!-- SCREEN 4: Review Redirect & Start Over -->
     <div id="screen-done" class="screen card-glass">
-      <h2 style="color: var(--success); margin-top:0; font-size: 32px;" id="t-thanks-title">Thank You!</h2>
-      <p class="lux-text" id="t-thanks-desc" style="font-size: 15px;">Your feedback is saved. We hope you enjoyed it!</p>
-      <p style="font-size: 15px; color: var(--text-dark); margin-top: 25px; font-weight: 600;" id="t-google-desc">Please support us with a 5-Star Review on Google!</p>
+      <h2 style="color: var(--success); margin-top:0; font-size: 30px;" id="t-thanks-title">Thank You!</h2>
+      <p class="lux-text" id="t-thanks-desc" style="font-size: 14.5px;">Your feedback is saved. We hope you enjoyed it!</p>
+      <p style="font-size: 14.5px; color: var(--text-dark); margin-top: 18px; font-weight: 600;" id="t-google-desc">Please support us with a 5-Star Review on Google!</p>
       
-      <button class="btn-google" id="t-btn-google" onclick="autoCopyReview()">
+      <!-- Editable AI Review Preview Box -->
+      <div style="background:#f9f6ec; border:1px solid var(--gold); border-radius:12px; padding:10px 12px; margin:10px 0; text-align:left;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <span style="font-size:11px; font-weight:700; color:var(--gold-dark);">✨ READY-TO-PASTE REVIEW</span>
+          <button type="button" onclick="shuffleReviewDraft()" style="width:auto; padding:3px 8px; font-size:10.5px; background:var(--gold); color:#111; border-radius:6px; text-transform:none;">🔄 Shuffle Text</button>
+        </div>
+        <p id="review-draft-preview" style="margin:0; font-size:12.5px; color:#222; font-style:italic; line-height:1.4;"></p>
+      </div>
+
+      <button type="button" class="btn-google" id="t-btn-google" onclick="autoCopyReview()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81z"/></svg>
         Copy Review & Open Google
       </button>
 
-      <!-- NEW: Refresh / Start Over Button -->
-      <button class="btn-outline" id="t-btn-restart" onclick="resetSession()">⟳ Scan Next Customer</button>
+      <!-- Refresh / Start Over Button -->
+      <button type="button" class="btn-outline" id="t-btn-restart" onclick="resetSession()">⟳ Scan Next Customer</button>
 
-      <!-- Developer Footer -->
+      <!-- Developer Footer (Strictly Unchanged URL & Credits) -->
       <div class="dev-footer">
-        <a href="https://catb12345612-ai.github.io/Syed-Zeeshaan-Ali-High-Fledged-Engineering-And-Digital-Tech-Solutions-Site/" target="_blank" style="text-decoration: none; color: var(--text-muted); font-size: 11px;">
+        <a href="https://catb12345612-ai.github.io/Syed-Zeeshaan-Ali-High-Fledged-Engineering-And-Digital-Tech-Solutions-Site/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: var(--text-muted); font-size: 11px;">
           <p style="margin-bottom: 5px;">Powered by</p>
-          <img src="dev-logo.png.png" class="dev-logo" alt="Developer Logo" onerror="this.style.display='none'">
+          <img id="dev-sza-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><circle cx='40' cy='40' r='38' fill='%2312121c' stroke='%23D4AF37' stroke-width='3'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' fill='%23F9E596' font-family='Poppins, sans-serif' font-weight='700' font-size='22'>SZA</text></svg>" data-local-logo="dev-logo.png.png" class="dev-logo" alt="Developer Logo">
           <p style="margin-top: 5px; font-weight: 600; line-height: 1.4; color: var(--text-dark);">Syed Zeeshaan Ali<br>High-Fledged-Engineering & Digital Tech Solutions</p>
         </a>
       </div>
@@ -418,25 +915,84 @@
     const GOOGLE_MAPS_LINK = "https://search.google.com/local/reviews?placeid=ChIJmxyKU3pZNDoRLuJ1ErrfKkE&q=Bangalore+Juicy+%26+Foods&authuser=0&hl=en&gl=IN";
     const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbxkb_Zzr4e3YSXmqjeWMeixw1287oGedvxvj7KPBojsAc-iF0mKl1TlZOf-99NzLOITAA/exec"; 
 
+    function fbUrl(subpath) {
+      return FIREBASE_URL + subpath;
+    }
+
     let availableItems = [];
     let assignedItem = null;
     let userPhone = "";
     let userSurveyPref = "";
     let userSurveyFreq = "";
+    let currentGameMode = "spin";
+    let isAudioMuted = false;
+    let rpsBusy = false;
+    let scratchCompleted = false;
+    let currentReviewDraft = "";
+
+    const fallbackItems = [
+      { name: "Choco Lava Cake", img: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?q=80&w=600&auto=format&fit=crop", inStock: true },
+      { name: "Strawberry Tart", img: "https://images.unsplash.com/photo-1519869325930-281384150729?q=80&w=600&auto=format&fit=crop", inStock: true },
+      { name: "Vanilla Bean Macaron", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?q=80&w=600&auto=format&fit=crop", inStock: true },
+      { name: "Blueberry Cheesecake", img: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?q=80&w=600&auto=format&fit=crop", inStock: true },
+      { name: "Dark Choco Fudge", img: "https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=600&auto=format&fit=crop", inStock: true },
+      { name: "Caramel Pudding", img: "https://images.unsplash.com/photo-1588195538326-c5b1e9f6f5b4?q=80&w=600&auto=format&fit=crop", inStock: true },
+      { name: "Red Velvet Brownie", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=600&auto=format&fit=crop", inStock: true },
+      { name: "Mango Sorbet", img: "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?q=80&w=600&auto=format&fit=crop", inStock: true }
+    ];
+
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = `custom-toast ${type === 'error' ? 'toast-error' : type === 'success' ? 'toast-success' : ''}`;
+      toast.innerHTML = `<span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transition = "opacity 0.3s ease";
+        setTimeout(() => toast.remove(), 300);
+      }, 3600);
+    }
+
+    function safeGetStorage(key) {
+      try { return localStorage.getItem(key); } catch (e) { return null; }
+    }
+    function safeSetStorage(key, val) {
+      try { localStorage.setItem(key, val); } catch (e) {}
+    }
+    function safeRemoveStorage(key) {
+      try { localStorage.removeItem(key); } catch (e) {}
+    }
 
     // --- MALE WELCOME AUDIO SYSTEM ---
     let welcomePlayed = false;
+    function playSound(id) {
+      if (isAudioMuted) return;
+      const el = document.getElementById(id);
+      if (el) {
+        el.currentTime = 0;
+        el.play().catch(() => {});
+      }
+    }
+
+    function toggleAudioMute() {
+      isAudioMuted = !isAudioMuted;
+      document.getElementById('mute-toggle-btn').innerText = isAudioMuted ? "🔇" : "🔊";
+      if (isAudioMuted && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
     function playMaleWelcome() {
-      if (welcomePlayed) return; // Play only once
+      if (welcomePlayed || isAudioMuted) return;
       welcomePlayed = true;
 
       if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance("Welcome to Bangalore Juicy and Foods");
-        utterance.pitch = 0.2; // Deep, heavy tone
-        utterance.rate = 0.85; // Slightly slower, authoritative
+        utterance.pitch = 0.2;
+        utterance.rate = 0.85;
         utterance.volume = 1;
 
-        // Try to fetch a male English voice
         const voices = window.speechSynthesis.getVoices();
         const maleVoice = voices.find(v => 
           (v.name.toLowerCase().includes('male') || 
@@ -450,7 +1006,6 @@
         window.speechSynthesis.speak(utterance);
       }
     }
-    // Browsers block audio until user interacts. We listen for the first touch/click.
     document.addEventListener('click', playMaleWelcome, { once: true });
     document.addEventListener('touchstart', playMaleWelcome, { once: true });
 
@@ -458,22 +1013,22 @@
     const i18n = {
       en: {
         welcomeTitle: "Welcome to Bangalore Juicy!",
-        welcomeDesc: "Thank you for choosing us in Khammam. Enter your mobile number below to claim your free special sweet treat today!",
+        welcomeDesc: "Thank you for choosing us in Khammam. Enter your mobile number below to play & claim your free special sweet treat today!",
         phonePlaceholder: "Enter 10-digit Mobile Number",
         btnUnlock: "🎁 Get My Free Gift",
         surveyTitle: "Quick Question!",
-        surveyDesc: "Help us serve you better by answering two simple questions before you spin.",
+        surveyDesc: "Help us serve you better by answering two simple questions before you play.",
         survQ1: "What is your favorite item here?",
         opt1: "Ice Creams & Shakes", opt2: "Cakes & Pastries", opt3: "Brownies", opt4: "Snacks & Fast Food",
         survQ2: "How often do you visit us?",
         freq1: "First Time Visiting", freq2: "Weekly", freq3: "Monthly", freq4: "Rarely",
-        btnNext: "Next: See Treats ➔",
+        btnNext: "Next: Choose Game & Win ➔",
         spinTitle: "Today's Premium Treats",
-        spinDesc: "Scroll down to view our luxurious selection, then spin at the bottom to claim yours!",
-        spinAction: "Spin to Win!",
-        btnSpin: "Spin Now",
+        spinDesc: "Explore today's fresh treats in stock below, then pick your favorite game to win yours!",
+        spinAction: "Choose How to Win!",
+        btnSpin: "🎰 Spin Now",
         wonSubtitle: "You Won A",
-        claimText: "Show this screen at the counter to get your treat!",
+        claimText: "Show this live screen at the counter to get your treat!",
         feedbackTitle: "Did you like the taste?",
         rate5: "⭐⭐⭐⭐⭐ - Superb!",
         rate4: "⭐⭐⭐⭐ - Very Good",
@@ -488,24 +1043,24 @@
         errPhone: "Please enter a valid 10-digit mobile number.",
         errClaimed: "This number has already claimed a gift! Only one treat per customer.",
         errNetwork: "Network Error. Please check your internet connection.",
-        clipboardMsg: "A 5-Star review text is copied to your clipboard!\n\nJust click PASTE on the Google Reviews page to help our business grow."
+        clipboardMsg: "5-Star review copied! Paste it on the Google Reviews page to support us."
       },
       te: {
         welcomeTitle: "బెంగుళూరు జ్యూసీకి స్వాగతం!",
-        welcomeDesc: "ఖమ్మంలో మమ్మల్ని ఎంచుకున్నందుకు ధన్యవాదాలు. ఈరోజు మీ ఉచిత సర్ప్రైజ్ స్వీట్ కోసం మీ నంబర్‌ను నమోదు చేయండి!",
-        phonePlaceholder: "10-అంకెల నంబర్‌ను నమోదు చేయండి",
+        welcomeDesc: "ఖమ్మంలో మమ్మల్ని ఎంచుకున్నందుకు ధన్యవాదాలు. ఈరోజు మీ ఉచిత సర్ప్రైజ్ స్వీట్ కోసం మీ నంబర్ను నమోదు చేయండి!",
+        phonePlaceholder: "10-అంకెల నంబర్ను నమోదు చేయండి",
         btnUnlock: "🎁 ఉచిత బహుమతి పొందండి",
         surveyTitle: "చిన్న ప్రశ్న!",
-        surveyDesc: "స్పిన్ చేయడానికి ముందు ఈ రెండు ప్రశ్నలకు సమాధానం ఇవ్వండి.",
+        surveyDesc: "గేమ్ ఆడే ముందు ఈ రెండు ప్రశ్నలకు సమాధానం ఇవ్వండి.",
         survQ1: "మీకు ఇక్కడ ఇష్టమైన ఐటమ్ ఏది?",
         opt1: "ఐస్ క్రీమ్స్ & షేక్స్", opt2: "కేక్స్ & పేస్ట్రీస్", opt3: "బ్రౌనీస్", opt4: "స్నాక్స్ & ఫాస్ట్ ఫుడ్",
         survQ2: "మీరు ఎంత తరచుగా వస్తుంటారు?",
         freq1: "మొదటిసారి వచ్చాను", freq2: "వారానికోసారి", freq3: "నెలకోసారి", freq4: "అరుదుగా",
-        btnNext: "తర్వాత: ఐటమ్స్ చూడండి ➔",
+        btnNext: "తర్వాత: గేమ్ ఆడండి ➔",
         spinTitle: "నేటి ప్రీమియం స్వీట్స్",
-        spinDesc: "మా ప్రత్యేక ఐటమ్స్ చూడటానికి కిందకు స్క్రోల్ చేయండి, ఆపై బహుమతి కోసం స్పిన్ చేయండి!",
-        spinAction: "స్పిన్ చేసి గెలవండి!",
-        btnSpin: "ఇప్పుడే స్పిన్ చేయండి",
+        spinDesc: "మా ప్రత్యేక ఐటమ్స్ చూడండి, ఆపై మీకు నచ్చిన గేమ్ ఆడి బహుమతి గెలుచుకోండి!",
+        spinAction: "గేమ్ ఎంచుకోండి!",
+        btnSpin: "🎰 ఇప్పుడే స్పిన్ చేయండి",
         wonSubtitle: "మీరు గెలుచుకున్నారు",
         claimText: "కౌంటర్ వద్ద ఇది చూపించి మీ స్వీట్ తీసుకోండి!",
         feedbackTitle: "రుచి ఎలా ఉంది?",
@@ -519,10 +1074,10 @@
         googleDesc: "5-స్టార్ గూగుల్ రివ్యూతో మమ్మల్ని సపోర్ట్ చేయండి!",
         btnGoogle: "రివ్యూ కాపీ చేసి గూగుల్ ఓపెన్ చేయండి",
         btnRestart: "⟳ కొత్త కస్టమర్ కోసం రీస్టార్ట్",
-        errPhone: "దయచేసి సరైన 10-అంకెల నంబర్‌ను నమోదు చేయండి.",
+        errPhone: "దయచేసి సరైన 10-అంకెల నంబర్ను నమోదు చేయండి.",
         errClaimed: "ఈ నంబర్ ఇప్పటికే బహుమతిని పొందింది! ఒక్కరికి ఒకటే బహుమతి.",
-        errNetwork: "నెట్‌వర్క్ లోపం. మీ ఇంటర్నెట్ తనిఖీ చేయండి.",
-        clipboardMsg: "5-స్టార్ రివ్యూ కాపీ చేయబడింది!\n\nగూగుల్ రివ్యూస్ పేజీలో పేస్ట్ చేయండి."
+        errNetwork: "నెట్వర్క్ లోపం. మీ ఇంటర్నెట్ తనిఖీ చేయండి.",
+        clipboardMsg: "5-స్టార్ రివ్యూ కాపీ చేయబడింది! గూగుల్ రివ్యూస్ పేజీలో పేస్ట్ చేయండి."
       },
       hi: {
         welcomeTitle: "बैंगलोर जूसी में आपका स्वागत है!",
@@ -530,16 +1085,16 @@
         phonePlaceholder: "10-अंकों का मोबाइल नंबर दर्ज करें",
         btnUnlock: "🎁 अपना मुफ्त उपहार पाएं",
         surveyTitle: "एक छोटा सवाल!",
-        surveyDesc: "स्पिन करने से पहले दो आसान सवालों का जवाब दें।",
+        surveyDesc: "खेलने से पहले दो आसान सवालों का जवाब दें।",
         survQ1: "यहाँ आपका पसंदीदा आइटम क्या है?",
         opt1: "आइसक्रीम और शेक्स", opt2: "केक और पेस्ट्री", opt3: "ब्राउनीज़", opt4: "स्नैक्स और फास्ट फूड",
         survQ2: "आप कितनी बार आते हैं?",
         freq1: "पहली बार", freq2: "हफ्ते में एक बार", freq3: "महीने में एक बार", freq4: "शायद ही कभी",
-        btnNext: "अगला: आइटम्स देखें ➔",
+        btnNext: "अगला: खेलें और जीतें ➔",
         spinTitle: "आज के विशेष आइटम्स",
-        spinDesc: "हमारे शानदार आइटम्स देखने के लिए नीचे स्क्रॉल करें, फिर स्पिन करें!",
-        spinAction: "स्पिन और जीतें!",
-        btnSpin: "अभी स्पिन करें",
+        spinDesc: "हमारे शानदार आइटम्स देखें और अपना उपहार जीतने के लिए गेम चुनें!",
+        spinAction: "जीतने का तरीका चुनें!",
+        btnSpin: "🎰 अभी स्पिन करें",
         wonSubtitle: "आपने जीता है",
         claimText: "काउंटर पर इसे दिखाएं और अपना उपहार लें!",
         feedbackTitle: "स्वाद कैसा था?",
@@ -556,7 +1111,7 @@
         errPhone: "कृपया सही 10-अंकों का मोबाइल नंबर दर्ज करें।",
         errClaimed: "इस नंबर से पहले ही उपहार लिया जा चुका है! एक ग्राहक के लिए एक उपहार।",
         errNetwork: "नेटवर्क त्रुटि। कृपया अपना इंटरनेट जांचें।",
-        clipboardMsg: "5-स्टार रिव्यू कॉपी हो गया है!\n\nहमें सपोर्ट करने के लिए Google Reviews पेज पर पेस्ट करें।"
+        clipboardMsg: "5-स्टार रिव्यू कॉपी हो गया है! Google Reviews पेज पर पेस्ट करें।"
       }
     };
 
@@ -608,55 +1163,101 @@
       `;
     }
 
+    // --- LIVE VOUCHER CLOCK (ANTI-SCREENSHOT VERIFICATION) ---
+    setInterval(() => {
+      const clockEl = document.getElementById('live-voucher-clock');
+      if (clockEl) {
+        const now = new Date();
+        clockEl.innerText = now.toLocaleTimeString();
+      }
+    }, 1000);
+
+    function updateStepIndicator(stepNum) {
+      for (let i = 1; i <= 4; i++) {
+        const dot = document.getElementById(`p-step-${i}`);
+        if (!dot) continue;
+        dot.classList.remove('active', 'completed');
+        if (i < stepNum) dot.classList.add('completed');
+        else if (i === stepNum) dot.classList.add('active');
+      }
+    }
+
     // --- STATE PERSISTENCE ---
     window.onload = function() {
       changeLanguage();
-      const savedState = localStorage.getItem('bjfState');
+      shuffleReviewDraft();
+      const savedState = safeGetStorage('bjfState');
       if (savedState) {
-        const state = JSON.parse(savedState);
-        userPhone = state.phone;
-        assignedItem = state.item;
-        
-        if (state.step === 'feedback') {
-          showScreen('screen-reward');
-          document.getElementById('product-name').innerText = assignedItem.name;
-          document.getElementById('product-image').src = assignedItem.img;
-          document.getElementById('product-image').style.display = "block";
-        } else if (state.step === 'done') {
-          showScreen('screen-done');
-        }
+        try {
+          const state = JSON.parse(savedState);
+          userPhone = state.phone || "";
+          assignedItem = state.item || null;
+          
+          if (state.step === 'feedback' && assignedItem) {
+            showScreen('screen-reward');
+            updateStepIndicator(4);
+            populateVoucherUI(assignedItem);
+          } else if (state.step === 'done') {
+            showScreen('screen-done');
+            updateStepIndicator(4);
+          }
+        } catch (err) {}
       }
     };
 
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(screenId).classList.add('active');
-      // Scroll to top of container when changing screens
-      document.querySelector('.screen-container').scrollTop = 0;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (screenId === 'screen-phone') updateStepIndicator(1);
+      if (screenId === 'screen-survey') updateStepIndicator(2);
+      if (screenId === 'screen-spin') updateStepIndicator(3);
+      if (screenId === 'screen-reward' || screenId === 'screen-done') updateStepIndicator(4);
     }
 
     function saveState(step) {
-      localStorage.setItem('bjfState', JSON.stringify({
+      safeSetStorage('bjfState', JSON.stringify({
         phone: userPhone,
         item: assignedItem,
         step: step
       }));
     }
 
-    // --- RESET SESSION (NEW REFRESH FUNCTION) ---
+    // --- RESET SESSION ---
     function resetSession() {
-      localStorage.removeItem('bjfState');
-      window.location.reload();
+      safeRemoveStorage('bjfState');
+      userPhone = "";
+      assignedItem = null;
+      rpsBusy = false;
+      scratchCompleted = false;
+
+      document.getElementById('phone').value = "";
+      document.getElementById('t-btn-unlock').disabled = false;
+      document.getElementById('t-btn-next').disabled = false;
+      document.getElementById('t-btn-spin').disabled = false;
+      document.getElementById('t-btn-submit').disabled = false;
+      document.getElementById('feedback').value = "";
+
+      const track = document.getElementById('slot-track');
+      if (track) {
+        track.style.transition = 'none';
+        track.style.transform = 'translateX(0px)';
+      }
+
+      changeLanguage();
+      showScreen('screen-phone');
+      showToast("Ready for the next customer!", "success");
     }
 
-    // --- STEP 1: Verify ---
+    // --- STEP 1: Verify Phone ---
     async function verifyPhone() {
       const lang = document.getElementById('language').value;
-      userPhone = document.getElementById('phone').value;
+      userPhone = document.getElementById('phone').value.trim();
       
       if (userPhone.length !== 10) {
-        document.getElementById('sfx-error').play();
-        return alert(i18n[lang].errPhone);
+        playSound('sfx-error');
+        showToast(i18n[lang].errPhone, "error");
+        return;
       }
 
       const btn = document.getElementById('t-btn-unlock');
@@ -664,21 +1265,27 @@
       btn.disabled = true;
 
       try {
-        const response = await fetch(`${FIREBASE_URL}/claimed/${userPhone}.json`);
+        const response = await fetch(fbUrl(`/claimed/${userPhone}.json`));
         const isClaimed = await response.json();
 
         if (isClaimed) {
-          document.getElementById('sfx-error').play();
-          alert(i18n[lang].errClaimed);
+          playSound('sfx-error');
+          showToast(i18n[lang].errClaimed, "error");
           btn.innerText = i18n[lang].btnUnlock;
           btn.disabled = false;
         } else {
           showScreen('screen-survey'); 
         }
       } catch(e) {
-        alert(i18n[lang].errNetwork);
-        btn.innerText = i18n[lang].btnUnlock;
-        btn.disabled = false;
+        const localClaimed = safeGetStorage('bjfClaimed_' + userPhone);
+        if (localClaimed === 'true') {
+          playSound('sfx-error');
+          showToast(i18n[lang].errClaimed, "error");
+          btn.innerText = i18n[lang].btnUnlock;
+          btn.disabled = false;
+        } else {
+          showScreen('screen-survey');
+        }
       }
     }
 
@@ -693,56 +1300,48 @@
 
       await loadProductsForSpinner();
       showScreen('screen-spin');
+      initScratchCard();
     }
 
-    // --- STEP 2: Spinner Engine & Grand Showcase ---
+    // --- STEP 2: Load Dynamic Stock Items for Showcase & All 3 Games ---
     async function loadProductsForSpinner() {
       try {
-        const res = await fetch(`${FIREBASE_URL}/products.json`);
+        const res = await fetch(fbUrl('/products.json'));
         const data = await res.json();
         availableItems = [];
-        for (let key in data) {
-          if(data[key].inStock === true) availableItems.push(data[key]);
+        if (data) {
+          for (let key in data) {
+            if (data[key] && data[key].inStock === true) {
+              availableItems.push(data[key]);
+            }
+          }
         }
       } catch(e) {
-        console.error("Using fallback items");
-      }
-
-      // Default 8 items if Firebase empty or network fails
-      const fallbackItems = [
-        { name: "Choco Lava Cake", img: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?q=80&w=600&auto=format&fit=crop" },
-        { name: "Strawberry Tart", img: "https://images.unsplash.com/photo-1519869325930-281384150729?q=80&w=600&auto=format&fit=crop" },
-        { name: "Vanilla Bean Macaron", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?q=80&w=600&auto=format&fit=crop" },
-        { name: "Blueberry Cheesecake", img: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?q=80&w=600&auto=format&fit=crop" },
-        { name: "Dark Choco Fudge", img: "https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=600&auto=format&fit=crop" },
-        { name: "Caramel Pudding", img: "https://images.unsplash.com/photo-1588195538326-c5b1e9f6f5b4?q=80&w=600&auto=format&fit=crop" },
-        { name: "Red Velvet Brownie", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=600&auto=format&fit=crop" },
-        { name: "Mango Sorbet", img: "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?q=80&w=600&auto=format&fit=crop" }
-      ];
-
-      // Ensure we have exactly 8 items
-      let eightItemsForPreview = [];
-      if (availableItems.length >= 8) {
-        eightItemsForPreview = availableItems.slice(0, 8);
-      } else if (availableItems.length > 0) {
-        eightItemsForPreview = [...availableItems];
-        let i = 0;
-        while(eightItemsForPreview.length < 8) {
-          eightItemsForPreview.push(fallbackItems[i % fallbackItems.length]);
-          i++;
+        const saved = safeGetStorage('bjfProductsMirror');
+        if (saved) {
+          try {
+            const mirror = JSON.parse(saved);
+            availableItems = [];
+            for (let k in mirror) {
+              if (mirror[k] && mirror[k].inStock === true) availableItems.push(mirror[k]);
+            }
+          } catch (err) {}
         }
-      } else {
-        eightItemsForPreview = fallbackItems;
       }
 
-      // 1. Populate the NEW Grand Landscape Showcase
+      // Strictly use live in-stock items; only fall back if 0 items exist
+      let activePool = availableItems.length > 0 ? [...availableItems] : [...fallbackItems];
+      availableItems = activePool;
+
+      // 1. Populate the Compact 2-Column Showcase Grid
       const showcaseGrid = document.getElementById('grand-showcase');
       showcaseGrid.innerHTML = "";
-      eightItemsForPreview.forEach(item => {
+      activePool.forEach(item => {
         const card = document.createElement('div');
         card.className = 'showcase-card';
         card.innerHTML = `
-          <img src="${item.img}" alt="${item.name}" onerror="this.src='https://ui-avatars.com/api/?name=Treat&background=D4AF37&color=fff'">
+          <span class="showcase-badge">✨ FREE TREAT</span>
+          <img src="${item.img}" alt="${item.name}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=D4AF37&color=fff'">
           <div class="showcase-card-overlay">
             <h3>${item.name}</h3>
           </div>
@@ -750,12 +1349,16 @@
         showcaseGrid.appendChild(card);
       });
 
-      // 2. Populate the Spin Track 
-      const itemsToSpin = eightItemsForPreview; 
+      // 2. Populate the Spin Track
       const track = document.getElementById('slot-track');
+      track.style.transition = 'none';
+      track.style.transform = 'translateX(0px)';
       track.innerHTML = ""; 
       
-      const spinStrip = [...itemsToSpin, ...itemsToSpin, ...itemsToSpin, ...itemsToSpin, ...itemsToSpin];
+      const spinStrip = [];
+      for (let r = 0; r < 6; r++) {
+        spinStrip.push(...activePool);
+      }
       
       spinStrip.forEach(item => {
         const div = document.createElement('div');
@@ -763,47 +1366,222 @@
         div.innerHTML = `<img src="${item.img}" alt="${item.name}" onerror="this.src='https://ui-avatars.com/api/?name=Treat&background=D4AF37&color=fff'"><p>${item.name}</p>`;
         track.appendChild(div);
       });
-
-      availableItems = itemsToSpin;
     }
 
+    // --- SWITCH BETWEEN THE 3 ARCADE GAMES ---
+    function selectGameMode(mode) {
+      currentGameMode = mode;
+      ['spin', 'rps', 'scratch'].forEach(m => {
+        document.getElementById(`mode-btn-${m}`).classList.toggle('active', m === mode);
+        document.getElementById(`arena-${m}`).classList.toggle('active', m === mode);
+      });
+      if (mode === 'scratch') {
+        setTimeout(initScratchCard, 60);
+      }
+    }
+
+    // --- GAME 1: ROYAL SPIN WHEEL ---
     async function startSpin() {
+      if (availableItems.length === 0) return;
       const btn = document.getElementById('t-btn-spin');
       btn.disabled = true;
-      document.getElementById('sfx-spin').play();
+      playSound('sfx-spin');
 
       const track = document.getElementById('slot-track');
+      const containerWidth = document.getElementById('slot-container').clientWidth;
       
       const baseLen = availableItems.length;
-      const targetIndex = (baseLen * 3) + Math.floor(Math.random() * baseLen);
+      const winningIndex = Math.floor(Math.random() * baseLen);
+      const targetIndex = (baseLen * 3) + winningIndex;
       
-      assignedItem = availableItems[targetIndex % baseLen];
+      assignedItem = availableItems[winningIndex];
 
-      const translateX = -(targetIndex * 100);
-      track.style.transform = `translateX(${translateX}%)`;
+      track.style.transition = 'transform 4s cubic-bezier(0.12, 0.85, 0.2, 1)';
+      const translatePx = -(targetIndex * containerWidth);
+      track.style.transform = `translateX(${translatePx}px)`;
 
-      setTimeout(async () => {
-        try {
-          await fetch(`${FIREBASE_URL}/claimed/${userPhone}.json`, { method: 'PUT', body: JSON.stringify(true) });
-          saveState('feedback');
-          showRewardScreen();
-        } catch(e) {
-          alert("Network Error saving claim, but the treat is yours!");
-          saveState('feedback');
-          showRewardScreen();
-        }
+      setTimeout(() => {
+        finalizeClaimAndShowReward();
       }, 4200);
+    }
+
+    // --- GAME 2: STONE-PAPER-SCISSORS CHEF DUEL ---
+    function playRPS(userMove) {
+      if (rpsBusy || availableItems.length === 0) return;
+      rpsBusy = true;
+      playSound('sfx-spin');
+
+      const moveIcons = { rock: '✊', paper: '✋', scissors: '✌️' };
+
+      const userHandEl = document.getElementById('rps-user-hand');
+      const chefHandEl = document.getElementById('rps-chef-hand');
+      const statusEl = document.getElementById('rps-status-msg');
+
+      userHandEl.innerText = '✊';
+      chefHandEl.innerText = '✊';
+      userHandEl.classList.add('shake');
+      chefHandEl.classList.add('shake');
+      statusEl.innerText = "Stone... Paper... Scissors... Shoot!";
+
+      setTimeout(() => {
+        userHandEl.classList.remove('shake');
+        chefHandEl.classList.remove('shake');
+
+        const rand = Math.random();
+        let chefMove;
+        if (rand < 0.72) {
+          if (userMove === 'rock') chefMove = 'scissors';
+          else if (userMove === 'paper') chefMove = 'rock';
+          else chefMove = 'paper';
+        } else {
+          chefMove = userMove;
+        }
+
+        userHandEl.innerText = moveIcons[userMove];
+        chefHandEl.innerText = moveIcons[chefMove];
+
+        if (userMove === chefMove) {
+          statusEl.innerText = "⚡ It's a Tie with the Chef! Go again to win!";
+          rpsBusy = false;
+        } else {
+          statusEl.innerText = "🎉 YOU BEAT THE CHEF! Unlocking your treat...";
+          assignedItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+          setTimeout(() => {
+            finalizeClaimAndShowReward();
+          }, 1100);
+        }
+      }, 950);
+    }
+
+    // --- GAME 3: GOLDEN SCRATCH CARD ---
+    function initScratchCard() {
+      if (availableItems.length === 0) return;
+      scratchCompleted = false;
+      if (!assignedItem) {
+        assignedItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+      }
+      document.getElementById('scratch-preview-img').src = assignedItem.img;
+      document.getElementById('scratch-preview-name').innerText = assignedItem.name;
+
+      const canvas = document.getElementById('scratch-canvas');
+      const wrap = document.getElementById('scratch-box-wrap');
+      if (!canvas || !wrap) return;
+
+      canvas.width = wrap.clientWidth || 340;
+      canvas.height = wrap.clientHeight || 190;
+      const ctx = canvas.getContext('2d');
+
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      grad.addColorStop(0, '#D4AF37');
+      grad.addColorStop(0.5, '#F9E596');
+      grad.addColorStop(1, '#AA8C2C');
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#3a2d07';
+      ctx.font = 'bold 17px Poppins, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🪙 RUB HERE TO REVEAL TREAT', canvas.width / 2, canvas.height / 2 - 5);
+      ctx.font = '12px Poppins, sans-serif';
+      ctx.fillText('Bangalore Juicy & Foods VIP Foil', canvas.width / 2, canvas.height / 2 + 18);
+
+      let isDrawing = false;
+      let scratchedPoints = 0;
+
+      function scratchAt(x, y) {
+        if (scratchCompleted) return;
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(x, y, 24, 0, Math.PI * 2);
+        ctx.fill();
+        scratchedPoints++;
+        if (scratchedPoints > 28) {
+          scratchCompleted = true;
+          canvas.style.transition = 'opacity 0.4s ease';
+          canvas.style.opacity = '0';
+          setTimeout(() => finalizeClaimAndShowReward(), 650);
+        }
+      }
+
+      canvas.onmousedown = () => { isDrawing = true; };
+      canvas.onmouseup = () => { isDrawing = false; };
+      canvas.onmousemove = (e) => {
+        if (!isDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        scratchAt(e.clientX - rect.left, e.clientY - rect.top);
+      };
+
+      canvas.ontouchstart = (e) => {
+        isDrawing = true;
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        scratchAt(touch.clientX - rect.left, touch.clientY - rect.top);
+      };
+      canvas.ontouchmove = (e) => {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        scratchAt(touch.clientX - rect.left, touch.clientY - rect.top);
+      };
+      canvas.ontouchend = () => { isDrawing = false; };
+    }
+
+    function instantRevealScratch() {
+      if (scratchCompleted) return;
+      scratchCompleted = true;
+      if (!assignedItem && availableItems.length > 0) {
+        assignedItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+      }
+      playSound('sfx-spin');
+      finalizeClaimAndShowReward();
+    }
+
+    // --- FINALIZE CLAIM IN FIREBASE & REVEAL VOUCHER ---
+    async function finalizeClaimAndShowReward() {
+      try {
+        await fetch(fbUrl(`/claimed/${userPhone}.json`), {
+          method: 'PUT',
+          body: JSON.stringify(true)
+        });
+      } catch (e) {
+        showToast("Saved locally! The treat is yours!", "info");
+      }
+      safeSetStorage('bjfClaimed_' + userPhone, 'true');
+      saveState('feedback');
+      showRewardScreen();
+    }
+
+    function populateVoucherUI(item) {
+      document.getElementById('product-name').innerText = item.name;
+      const imgElement = document.getElementById('product-image');
+      imgElement.src = item.img;
+      imgElement.style.display = "block";
+      const suffix = userPhone ? userPhone.slice(-4) : Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('voucher-code-display').innerText = `BJF-${suffix}`;
+      shuffleReviewDraft();
     }
 
     function showRewardScreen() {
       showScreen('screen-reward');
-      document.getElementById('sfx-win').play();
-      confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 }, colors: ['#D4AF37', '#ffffff', '#3fbf6a'] });
+      playSound('sfx-win');
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 180, spread: 95, origin: { y: 0.5 }, colors: ['#D4AF37', '#ffffff', '#3fbf6a'] });
+      }
+      populateVoucherUI(assignedItem);
+    }
 
-      document.getElementById('product-name').innerText = assignedItem.name;
-      const imgElement = document.getElementById('product-image');
-      imgElement.src = assignedItem.img;
-      imgElement.style.display = "block";
+    function setStarRating(val) {
+      document.getElementById('rating').value = val;
+      syncStarsFromSelect();
+    }
+    function syncStarsFromSelect() {
+      const val = parseInt(document.getElementById('rating').value, 10);
+      const btns = document.querySelectorAll('#star-picker .star-btn');
+      btns.forEach((b, idx) => {
+        b.classList.toggle('selected', idx < val);
+      });
     }
 
     // --- STEP 3: Feedback ---
@@ -815,7 +1593,7 @@
       btn.innerText = "Saving...";
       btn.disabled = true;
 
-      const combinedFeedback = `[Fav: ${userSurveyPref}, Freq: ${userSurveyFreq}] - ${feedback}`;
+      const combinedFeedback = `[Fav: ${userSurveyPref}, Freq: ${userSurveyFreq}, Game: ${currentGameMode}] - ${feedback}`;
 
       fetch(GOOGLE_SHEETS_URL, {
         method: 'POST',
@@ -823,52 +1601,74 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           phone: userPhone, 
-          product: assignedItem.name, 
+          product: assignedItem ? assignedItem.name : "Surprise Treat", 
           rating: rating, 
           feedback: combinedFeedback
         })
       }).then(() => {
         saveState('done');
         showScreen('screen-done');
+        showToast("Feedback saved! Thank you!", "success");
       }).catch(() => {
         saveState('done');
         showScreen('screen-done');
       });
     }
 
-    // --- STEP 4: Review ---
-    function autoCopyReview() {
-      const lang = document.getElementById('language').value;
+    // --- STEP 4: Smart Personalized Review Generator & Clipboard Copy ---
+    function shuffleReviewDraft() {
+      const itemName = assignedItem && assignedItem.name ? assignedItem.name : "sweet treats";
       const prefixes = [
-        "Absolutely loved the items at Bangalore Juicy & Foods! ", 
-        "Amazing quality and super fresh treats. ", 
-        "The hygiene and taste here in Khammam are top-notch. ", 
-        "My favorite spot for quick bites and desserts. ", 
-        "Delicious flavors with perfect texture. ", 
-        "Highly recommend this place to everyone! ", 
-        "Fantastic service and the freshest items. ", 
-        "A must-visit cafe in Khammam! Quality is unmatched. "
+        `Absolutely loved the ${itemName} at Bangalore Juicy & Foods! `, 
+        `Amazing quality and super fresh ${itemName} here in Khammam. `, 
+        `The hygiene, ambience, and ${itemName} at Bangalore Juicy & Foods are top-notch. `, 
+        `My favorite spot in Khammam for quick bites, shakes, and ${itemName}! `, 
+        `Tried the ${itemName} today — delicious flavor with perfect texture. `
       ];
       const suffixes = [
-        "Will definitely come back again.", 
-        "Highly recommended to everyone.", 
-        "5 stars from me!", 
-        "Keep up the great work.", 
-        "Perfect treat for any day.", 
-        "Customer service is outstanding.", 
-        "Very friendly and polite staff."
+        "Will definitely come back again with friends!", 
+        "Highly recommended to everyone in Khammam.", 
+        "5 stars from me! Friendly and polite staff.", 
+        "Customer service is outstanding and super fast."
       ];
-
       const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
       const randomSuffix = suffixes[Math.floor(Math.random() * suffixes.length)];
-      const finalComment = randomPrefix + randomSuffix;
+      currentReviewDraft = randomPrefix + randomSuffix;
+      const previewEl = document.getElementById('review-draft-preview');
+      if (previewEl) previewEl.innerText = `"${currentReviewDraft}"`;
+    }
 
-      navigator.clipboard.writeText(finalComment).then(() => {
-        alert(i18n[lang].clipboardMsg);
-        window.open(GOOGLE_MAPS_LINK, "_blank");
-      }).catch(() => {
-        window.open(GOOGLE_MAPS_LINK, "_blank");
-      });
+    function autoCopyReview() {
+      const lang = document.getElementById('language').value;
+      if (!currentReviewDraft) shuffleReviewDraft();
+
+      const openMaps = () => {
+        showToast(i18n[lang].clipboardMsg, "success");
+        setTimeout(() => {
+          window.open(GOOGLE_MAPS_LINK, "_blank");
+        }, 500);
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(currentReviewDraft).then(openMaps).catch(() => {
+          fallbackCopyText(currentReviewDraft);
+          openMaps();
+        });
+      } else {
+        fallbackCopyText(currentReviewDraft);
+        openMaps();
+      }
+    }
+
+    function fallbackCopyText(text) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      ta.remove();
     }
   </script>
 </body>
