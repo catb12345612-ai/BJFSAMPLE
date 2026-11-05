@@ -708,7 +708,7 @@
         <span id="live-treat-counter">🔥 42 treats claimed in Khammam today!</span>
       </div>
       <br>
-      <img id="main-bjf-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><circle cx='60' cy='60' r='58' fill='%231a1a1a' stroke='%23D4AF37' stroke-width='4'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' fill='%23F9E596' font-family='Playfair Display, serif' font-weight='800' font-size='34'>BJF</text><text x='50%' y='76%' dominant-baseline='middle' text-anchor='middle' fill='%23D4AF37' font-family='Poppins, sans-serif' font-weight='600' font-size='9' letter-spacing='1.5'>KHAMMAM</text></svg>" data-local-logo="bjf_logo_circle.png" class="restaurant-logo" alt="BJF Logo">
+      <img id="main-bjf-logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+PGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iNTgiIGZpbGw9IiMxYTFhMWEiIHN0cm9rZT0iI0Q0QUYzNyIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHRleHQgeD0iNjAiIHk9IjY1IiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRjlFNTk2IiBmb250LWZhbWlseT0iUGxheWZhaXIgRGlzcGxheSwgc2VyaWYiIGZvbnQtd2VpZ2h0PSI4MDAiIGZvbnQtc2l6ZT0iMzQiPkJKRjwvdGV4dD48dGV4dCB4PSI2MCIgeT0iOTEiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNENEFGMzciIGZvbnQtZmFtaWx5PSJQb3BwaW5zLCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iNjAwIiBmb250LXNpemU9IjkiIGxldHRlci1zcGFjaW5nPSIxLjUiPktIQU1NQU08L3RleHQ+PC9zdmc+" data-local-logo="bjf_logo_circle.png" class="restaurant-logo" alt="BJF Logo">
       <h2 id="t-welcome-title">Welcome to Bangalore Juicy!</h2>
       <p class="lux-text" id="t-welcome-desc">
         Thank you for choosing us in Khammam. Enter your mobile number below to play & claim your free special sweet treat today!
@@ -902,7 +902,7 @@
       <div class="dev-footer">
         <a href="https://catb12345612-ai.github.io/Syed-Zeeshaan-Ali-High-Fledged-Engineering-And-Digital-Tech-Solutions-Site/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: var(--text-muted); font-size: 11px;">
           <p style="margin-bottom: 5px;">Powered by</p>
-          <img id="dev-sza-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><circle cx='40' cy='40' r='38' fill='%2312121c' stroke='%23D4AF37' stroke-width='3'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' fill='%23F9E596' font-family='Poppins, sans-serif' font-weight='700' font-size='22'>SZA</text></svg>" data-local-logo="dev-logo.png.png" class="dev-logo" alt="Developer Logo">
+          <img id="dev-sza-logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDgwIDgwIj48Y2lyY2xlIGN4PSI0MCIgY3k9IjQwIiByPSIzOCIgZmlsbD0iIzEyMTIxYyIgc3Ryb2tlPSIjRDRBRjM3IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI0MCIgeT0iNDMiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNGOUU1OTYiIGZvbnQtZmFtaWx5PSJQb3BwaW5zLCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iNzAwIiBmb250LXNpemU9IjIyIj5TWkE8L3RleHQ+PC9zdmc+" data-local-logo="dev-logo.png.png" class="dev-logo" alt="Developer Logo">
           <p style="margin-top: 5px; font-weight: 600; line-height: 1.4; color: var(--text-dark);">Syed Zeeshaan Ali<br>High-Fledged-Engineering & Digital Tech Solutions</p>
         </a>
       </div>
@@ -1183,7 +1183,20 @@
     }
 
     // --- STATE PERSISTENCE ---
+    
+    function tryLoadLocalImg(imgId) {
+      const el = document.getElementById(imgId);
+      if (!el) return;
+      const localSrc = el.getAttribute('data-local-logo');
+      if (!localSrc) return;
+      const probe = new Image();
+      probe.onload = function() { el.src = localSrc; };
+      probe.src = localSrc;
+    }
+
     window.onload = function() {
+      tryLoadLocalImg('main-bjf-logo');
+      tryLoadLocalImg('dev-sza-logo');
       changeLanguage();
       shuffleReviewDraft();
       const savedState = safeGetStorage('bjfState');
@@ -1397,8 +1410,13 @@
       assignedItem = availableItems[winningIndex];
 
       track.style.transition = 'transform 4s cubic-bezier(0.12, 0.85, 0.2, 1)';
-      const translatePx = -(targetIndex * containerWidth);
-      track.style.transform = `translateX(${translatePx}px)`;
+      if (containerWidth > 0) {
+        const translatePx = -(targetIndex * containerWidth);
+        track.style.transform = `translateX(${translatePx}px)`;
+      } else {
+        const translatePct = -(targetIndex * 100);
+        track.style.transform = `translateX(${translatePct}%)`;
+      }
 
       setTimeout(() => {
         finalizeClaimAndShowReward();
