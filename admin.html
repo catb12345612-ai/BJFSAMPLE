@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Admin - BJF Live Stock & Sample Studio</title>
+  <link rel="preconnect" href="https://gani-cafe-default-rtdb.asia-southeast1.firebasedatabase.app" crossorigin>
+  <link rel="dns-prefetch" href="https://gani-cafe-default-rtdb.asia-southeast1.firebasedatabase.app">
+  <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -61,7 +64,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      animation: slideDownToast 0.3s ease forwards;
+      animation: slideDownToast 0.25s ease forwards;
       pointer-events: auto;
     }
     .custom-toast.toast-error { border-left-color: #ff4d4f; }
@@ -151,7 +154,7 @@
       border-radius: 11px;
       font-weight: 700;
       cursor: pointer;
-      transition: 0.2s;
+      transition: 0.18s;
       box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
       font-size: 13px;
       font-family: 'Poppins', sans-serif;
@@ -200,6 +203,7 @@
       display: flex;
       flex-direction: column;
       box-shadow: 4px 4px 10px #070709;
+      transition: opacity 0.18s ease, border-color 0.18s ease;
     }
     .admin-item-card.out-of-stock {
       opacity: 0.65;
@@ -276,6 +280,8 @@
         </p>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn-green" onclick="setAllStockRapid(true)">⚡ All In Stock</button>
+        <button type="button" style="background:#b71c1c; color:#fff;" onclick="setAllStockRapid(false)">🚫 All Out of Stock</button>
         <button type="button" class="btn-gold" onclick="loadStock()">🔄 Refresh Live DB</button>
         <button type="button" style="background:#27273a; color:#fff;" onclick="seedDefaultItemsToFirebase()">⚡ Seed 8 Defaults</button>
       </div>
@@ -331,7 +337,7 @@
     <div class="admin-section-card">
       <h3 style="font-size:18px; margin-bottom:6px;">📦 Live Stock & Picture Manager</h3>
       <p style="color:#9ca3af; font-size:12.5px; margin-top:0; margin-bottom:16px;">
-        Click <b>"✏️ Edit Photo"</b> on any card to change its picture or name, or tap the stock button to toggle <b>IN STOCK / OUT OF STOCK</b>.
+        Click <b>"✏️ Edit Photo"</b> on any card to change its picture or name, or tap the stock button to toggle <b>IN STOCK / OUT OF STOCK</b> instantaneously.
       </p>
       <div id="inventory" class="admin-inventory-grid">
         <p style="text-align: center; color: #fff; grid-column: 1 / -1;">Connecting to Database...</p>
@@ -374,6 +380,30 @@
       { name: "Mango Sorbet", img: "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?q=80&w=600&auto=format&fit=crop", inStock: true }
     ];
 
+    let stockChannel = null;
+    try {
+      if ('BroadcastChannel' in window) {
+        stockChannel = new BroadcastChannel('bjf_live_stock_channel');
+      }
+    } catch (e) {}
+
+    function broadcastStockInstant(productsObj) {
+      try {
+        if (stockChannel) {
+          stockChannel.postMessage({ products: productsObj, ts: Date.now() });
+        }
+      } catch (e) {}
+    }
+
+    function optimizeAdminImgUrl(url) {
+      if (!url || typeof url !== 'string') return url;
+      if (url.includes('images.unsplash.com')) {
+        const base = url.split('?')[0];
+        return `${base}?auto=format&fit=crop&w=340&q=68`;
+      }
+      return url;
+    }
+
     function showToast(message, type = "info") {
       const container = document.getElementById("toast-container");
       const toast = document.createElement("div");
@@ -382,9 +412,9 @@
       container.appendChild(toast);
       setTimeout(() => {
         toast.style.opacity = "0";
-        toast.style.transition = "opacity 0.3s ease";
-        setTimeout(() => toast.remove(), 300);
-      }, 3400);
+        toast.style.transition = "opacity 0.25s ease";
+        setTimeout(() => toast.remove(), 250);
+      }, 2600);
     }
 
     function safeGetStorage(key) {
@@ -399,7 +429,13 @@
       if (localProductsMirror) return localProductsMirror;
       const saved = safeGetStorage('bjfProductsMirror');
       if (saved) {
-        try { localProductsMirror = JSON.parse(saved); return localProductsMirror; } catch(e) {}
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+            localProductsMirror = parsed;
+            return localProductsMirror;
+          }
+        } catch(e) {}
       }
       localProductsMirror = {};
       fallbackItems.forEach((item, idx) => {
@@ -410,6 +446,19 @@
     function saveMirrorProducts(obj) {
       localProductsMirror = obj;
       safeSetStorage('bjfProductsMirror', JSON.stringify(obj));
+      broadcastStockInstant(obj);
+    }
+
+    function updateCountersOnly(data) {
+      let total = 0, inCount = 0, outCount = 0;
+      for (let key in data) {
+        if (!data[key]) continue;
+        total++;
+        if (data[key].inStock === true) inCount++; else outCount++;
+      }
+      document.getElementById('stat-total-items').innerText = total;
+      document.getElementById('stat-instock-items').innerText = inCount;
+      document.getElementById('stat-outstock-items').innerText = outCount;
     }
 
     function renderInventory(data) {
@@ -437,18 +486,18 @@
         if (isStock) inCount++; else outCount++;
 
         const safeName = (item.name || "Untitled").replace(/"/g, '&quot;');
-        const safeImg = (item.img || "").replace(/"/g, '&quot;');
+        const safeImg = optimizeAdminImgUrl((item.img || "").replace(/"/g, '&quot;'));
 
         html += `
-          <div class="admin-item-card ${isStock ? '' : 'out-of-stock'}">
+          <div class="admin-item-card ${isStock ? '' : 'out-of-stock'}" id="adm-card-${key}">
             <div class="admin-item-img-wrap">
-              <img id="adm-img-view-${key}" src="${safeImg}" alt="${safeName}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.name || 'BJF')}&background=D4AF37&color=fff'">
-              <span class="stock-pill-badge ${isStock ? 'in' : 'out'}">${isStock ? 'IN STOCK' : 'OUT OF STOCK'}</span>
+              <img id="adm-img-view-${key}" src="${safeImg}" alt="${safeName}" decoding="async" loading="eager" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.name || 'BJF')}&background=D4AF37&color=fff'">
+              <span class="stock-pill-badge ${isStock ? 'in' : 'out'}" id="adm-badge-${key}">${isStock ? 'IN STOCK' : 'OUT OF STOCK'}</span>
             </div>
             <div class="admin-item-body">
-              <p class="admin-item-title">${safeName}</p>
+              <p class="admin-item-title" id="adm-title-${key}">${safeName}</p>
               <div class="admin-item-actions">
-                <button type="button" class="admin-btn-sm" style="flex:1; background:${isStock ? 'linear-gradient(135deg, #40d06a, #1faa4f)' : 'linear-gradient(135deg, #e04b3a, #b71c1c)'}; color:white;" onclick="toggleStock('${key}', ${isStock})">
+                <button type="button" id="adm-toggle-btn-${key}" class="admin-btn-sm" style="flex:1; background:${isStock ? 'linear-gradient(135deg, #40d06a, #1faa4f)' : 'linear-gradient(135deg, #e04b3a, #b71c1c)'}; color:white;" onclick="toggleStock('${key}')">
                   ${isStock ? 'IN STOCK' : 'OUT OF STOCK'}
                 </button>
                 <button type="button" class="admin-btn-sm" style="background:#2b2b3d; color:var(--gold-light); border:1px solid rgba(212,175,55,0.4);" onclick="toggleEditDrawer('${key}')">
@@ -481,17 +530,15 @@
     }
 
     async function loadStock() {
+      // Render mirror immediately at 0ms so UI never lags
+      renderInventory(getMirrorProducts());
       try {
-        const res = await fetch(fbProductsUrl('.json'));
+        const res = await fetch(fbProductsUrl(`.json?t=${Date.now()}`), { cache: 'no-store' });
         const data = await res.json();
         if (data && Object.keys(data).length > 0) {
           renderInventory(data);
-        } else {
-          renderInventory(getMirrorProducts());
         }
-      } catch(e) {
-        renderInventory(getMirrorProducts());
-      }
+      } catch(e) {}
     }
 
     function toggleEditDrawer(key) {
@@ -499,21 +546,55 @@
       if (drawer) drawer.classList.toggle('open');
     }
 
-    async function toggleStock(key, currentStatus) {
+    // --- ZERO-LATENCY OPTIMISTIC IN-STOCK / OUT-OF-STOCK TOGGLE ---
+    function toggleStock(key) {
       const mirror = getMirrorProducts();
-      if (mirror[key]) {
-        mirror[key].inStock = !currentStatus;
-        saveMirrorProducts(mirror);
+      if (!mirror[key]) return;
+      const nextStatus = !(mirror[key].inStock === true);
+      mirror[key].inStock = nextStatus;
+      saveMirrorProducts(mirror);
+
+      // Instant in-place DOM update (0ms, no full grid re-render or network wait)
+      const card = document.getElementById(`adm-card-${key}`);
+      const badge = document.getElementById(`adm-badge-${key}`);
+      const btn = document.getElementById(`adm-toggle-btn-${key}`);
+      if (card) card.classList.toggle('out-of-stock', !nextStatus);
+      if (badge) {
+        badge.className = `stock-pill-badge ${nextStatus ? 'in' : 'out'}`;
+        badge.innerText = nextStatus ? 'IN STOCK' : 'OUT OF STOCK';
       }
-      try {
-        await fetch(fbProductsUrl(`/${key}.json`), {
+      if (btn) {
+        btn.style.background = nextStatus
+          ? 'linear-gradient(135deg, #40d06a, #1faa4f)'
+          : 'linear-gradient(135deg, #e04b3a, #b71c1c)';
+        btn.innerText = nextStatus ? 'IN STOCK' : 'OUT OF STOCK';
+      }
+      updateCountersOnly(mirror);
+      showToast(`${mirror[key].name}: ${nextStatus ? 'IN STOCK' : 'OUT OF STOCK'}`, "success");
+
+      // Fire-and-forget Firebase PATCH in background
+      fetch(fbProductsUrl(`/${key}.json`), {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inStock: nextStatus })
+      }).catch(() => {});
+    }
+
+    // Rapid 1-click Bulk Stock Toggle
+    function setAllStockRapid(statusBool) {
+      const mirror = getMirrorProducts();
+      for (let key in mirror) {
+        if (mirror[key]) mirror[key].inStock = statusBool;
+      }
+      renderInventory(mirror);
+      showToast(statusBool ? "All items marked IN STOCK!" : "All items marked OUT OF STOCK!", "success");
+      for (let key in mirror) {
+        fetch(fbProductsUrl(`/${key}.json`), {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ inStock: !currentStatus })
-        });
-      } catch (e) {}
-      showToast("Stock status updated!", "success");
-      loadStock();
+          body: JSON.stringify({ inStock: statusBool })
+        }).catch(() => {});
+      }
     }
 
     async function saveItemEdits(key) {
@@ -529,15 +610,19 @@
         mirror[key].img = newImg;
         saveMirrorProducts(mirror);
       }
-      try {
-        await fetch(fbProductsUrl(`/${key}.json`), {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: newName, img: newImg })
-        });
-      } catch (e) {}
+      const titleEl = document.getElementById(`adm-title-${key}`);
+      const imgEl = document.getElementById(`adm-img-view-${key}`);
+      const drawer = document.getElementById(`edit-drawer-${key}`);
+      if (titleEl) titleEl.innerText = newName;
+      if (imgEl && newImg) imgEl.src = optimizeAdminImgUrl(newImg);
+      if (drawer) drawer.classList.remove('open');
+
       showToast(`Updated "${newName}"!`, "success");
-      loadStock();
+      fetch(fbProductsUrl(`/${key}.json`), {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newName, img: newImg })
+      }).catch(() => {});
     }
 
     async function addNewSampleItem() {
@@ -553,8 +638,14 @@
 
       const newObj = { name: name, img: img, inStock: true };
       const mirror = getMirrorProducts();
-      mirror['item_' + Date.now()] = newObj;
-      saveMirrorProducts(mirror);
+      const tempKey = 'item_' + Date.now();
+      mirror[tempKey] = newObj;
+      renderInventory(mirror);
+
+      nameInput.value = "";
+      imgInput.value = "";
+      document.getElementById('new-item-preview').src = "https://ui-avatars.com/api/?name=New&background=D4AF37&color=fff";
+      showToast(`Added "${name}" to live inventory!`, "success");
 
       try {
         await fetch(fbProductsUrl('.json'), {
@@ -562,29 +653,31 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newObj)
         });
+        loadStock();
       } catch (e) {}
-
-      nameInput.value = "";
-      imgInput.value = "";
-      document.getElementById('new-item-preview').src = "https://ui-avatars.com/api/?name=New&background=D4AF37&color=fff";
-      showToast(`Added "${name}" to live inventory!`, "success");
-      loadStock();
     }
 
-    async function deleteSampleItem(key) {
+    function deleteSampleItem(key) {
       const mirror = getMirrorProducts();
       delete mirror[key];
+      const card = document.getElementById(`adm-card-${key}`);
+      if (card) card.remove();
       saveMirrorProducts(mirror);
-      try {
-        await fetch(fbProductsUrl(`/${key}.json`), {
-          method: 'DELETE'
-        });
-      } catch (e) {}
+      updateCountersOnly(mirror);
       showToast("Sample removed from inventory", "info");
-      loadStock();
+
+      fetch(fbProductsUrl(`/${key}.json`), {
+        method: 'DELETE'
+      }).catch(() => {});
     }
 
     async function seedDefaultItemsToFirebase() {
+      const seeded = {};
+      fallbackItems.forEach((item, i) => {
+        seeded['sample_' + (i + 1)] = { ...item };
+      });
+      renderInventory(seeded);
+      showToast("8 Default Treats seeded!", "success");
       try {
         for (const item of fallbackItems) {
           await fetch(fbProductsUrl('.json'), {
@@ -593,9 +686,8 @@
             body: JSON.stringify(item)
           });
         }
+        loadStock();
       } catch (e) {}
-      showToast("8 Default Treats seeded!", "success");
-      loadStock();
     }
 
     async function unlockCustomerPhone() {
@@ -604,12 +696,10 @@
         showToast("Enter a valid 10-digit mobile number", "error");
         return;
       }
-      try {
-        await fetch(fbClaimedUrl(phone), { method: 'DELETE' });
-      } catch (e) {}
       try { localStorage.removeItem('bjfClaimed_' + phone); } catch (e) {}
       document.getElementById('admin-unlock-phone').value = "";
       showToast(`Phone ${phone} unlocked!`, "success");
+      fetch(fbClaimedUrl(phone), { method: 'DELETE' }).catch(() => {});
     }
 
     function previewNewItemImg(url) {
@@ -626,7 +716,7 @@
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 480;
+          const MAX_WIDTH = 420;
           const scale = Math.min(1, MAX_WIDTH / img.width);
           canvas.width = Math.round(img.width * scale);
           canvas.height = Math.round(img.height * scale);
@@ -634,7 +724,7 @@
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.78);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.74);
           const inputEl = document.getElementById(targetInputId);
           if (inputEl) inputEl.value = compressedDataUrl;
           const previewEl = document.getElementById(previewImgId);
